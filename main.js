@@ -46,7 +46,17 @@ router.route('/add')
                 res.send(err);
             })
         });
-
+       /* 
+        router.route('/get') //get probably not the most appropriate
+        .get((req, res) => {
+            UserController.getUser(req, res)
+                .then((response) => {
+                    res.json(response);
+                })
+                .catch((err) => {
+                    res.send(err);
+                })
+            });*/
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);

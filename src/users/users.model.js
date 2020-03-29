@@ -31,4 +31,4 @@ const userSchema = new Schema({
   }
 })
 
-module.exports = mongoose.model('user', userSchema, 'user_registration'); //export the model
+module.exports = userSchema

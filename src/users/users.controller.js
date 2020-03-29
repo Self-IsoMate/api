@@ -1,6 +1,7 @@
 var mongoose   = require('mongoose');
 var schema = require('./users.model');
 var cors = require('cors');
+const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 
 const UserController = {
 	addUser = async (request, response) => {
@@ -22,7 +23,26 @@ const UserController = {
 				response.json({ success: true, user: user });
 			}
 		});
+	},
+
+	getUser = async (req, res) => {
+		return new Promise( (resolve, reject) => 
+			{
+				User.findOne(req.params.cust_id, (err, customer) => {
+					if (err) {
+						return reject({sucess: false, response: err});
+					} else if (!customer) {
+						return reject({sucess: false, response: 'No customer found'});
+					} else {
+						return resolve({sucess: true, response: customer});
+					}
+				})
+			}
+		);
 	}
+
 };
+
+
 
 modules.exports = UserController;
