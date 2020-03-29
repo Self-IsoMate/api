@@ -83,6 +83,7 @@ router.route('/categories/:category_name/communities')
 router.route('/users/:user_id/communities')
 	.post(userController.addCommunity)
 	.delete(userController.removeCommunity)
+	.get(userController.getCommunitiesFromUser)
 ;
 
 // REGISTER OUR ROUTES -------------------------------

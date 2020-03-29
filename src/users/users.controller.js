@@ -137,6 +137,16 @@ const UserController = {
 			response.send(err);
 			console.log(err);
 		}
+	},
+
+	getCommunitiesFromUser: async (request, response) => {
+		User.findById(request.params.user_id, "communities", (err, res) => {
+			if (err)
+				response.send(err);
+
+			if (res)
+				response.send(res);
+		});
 	}
 };
 
