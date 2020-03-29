@@ -77,6 +77,9 @@ router.route('/communities/:community_id')
 	.put(communityController.updateCommunity)
 ;
 
+router.route('/categories/:category_name/communities')
+	.get(communityController.getCommunitiesFromCategory);
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);

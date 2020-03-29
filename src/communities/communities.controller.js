@@ -17,7 +17,7 @@ const CommunityController = {
 			if (err)
 				response.send(err);
 		});
-		
+
 		try {
 			var community = new Community({
 				name: request.body.name,
@@ -77,9 +77,37 @@ const CommunityController = {
 
 	deleteCommunity: async (request, response) => {
 
+		// check if there are any relationships between categories and this community
+
+		try {
+
+		var categoryCommunities = await CategoryCommunity.find({ 'category._id': { $elemMatch: { _id: request.params.community_id } } }, (err) => {
+			if (err)
+				throw err;
+		});
+
+		if (categoryCommunities) {
+
+			console.log("here");
+
+			// remove from list of communities
+			CategoryCommunity.updateMany( 
+				{ _id: request.params.community_id },
+				{ $pull: { "communities" : { _id : request.params.community_id } } },
+				{ safe: true },
+				(err, obj) => {
+					if (err)
+						throw err;
+
+					if (obj)
+						console.log(obj);
+				});
+			
+		}
+
 		Community.deleteOne({ _id: request.params.community_id }, (err, res) => {
 			if (err) {
-				response.send(err);
+				throw err;
 			}
 
 			if (res) {
@@ -87,9 +115,19 @@ const CommunityController = {
 			}
 			
 		});
+
+		} catch (err) {
+			response.send(err);
+		}
 	},
 
 	updateCommunity: async (request, response) => {
+
+		// find any relationships between this and categories
+
+		// update that
+
+		// and update this
 
 		Community.findByIdAndUpdate(request.params.community_id, request.body, (err, res) => {
 			if (err) {
@@ -120,6 +158,18 @@ const CommunityController = {
 			if (err)
 				response.send(err);
 			
+			if (res)
+				response.send(res);
+		});
+	},
+
+	getCommunitiesFromCategory: async (request, response) => {
+		var parameter = request.params.category_name;
+
+		CategoryCommunity.find({ 'category.name': parameter }, (err, res) => {
+			if (err)
+				response.send(err);
+
 			if (res)
 				response.send(res);
 		});
