@@ -16,7 +16,7 @@ var userController = require('./src/users/users.controller');
 // SCHEMAS
 
 
-const CONNECTION_STRING = 'mongodb+srv://sophie@admin:applesAndOranges@self-isomatedb-8bnuw.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const CONNECTION_STRING = 'mongodb+srv://sophie:applesAndOranges@self-isomatedb-8bnuw.gcp.mongodb.net/test?retryWrites=true&w=majority';
 
 // FUNCTIONS FOR API
 

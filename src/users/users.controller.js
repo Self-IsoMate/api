@@ -16,10 +16,11 @@
 var mongoose   = require('mongoose');
 var schema = require('./users.model');
 var cors = require('cors');
+var userSchema = require('./users.model');
 
 const UserController = {
 	addUser: async (request, response) => {
-		var user = new User({
+		var user = new userSchema({
 			username: request.body.username,
 			password: request.body.password,
 			isMentor: request.body.isMentor,
@@ -29,6 +30,8 @@ const UserController = {
 			profilePicture: request.body.profilePicture,
 			dateCreated: request.body.dateCreated
 		});
+
+		console.log("user done");
 
 		user.save((err) => {
 			if (err) {
