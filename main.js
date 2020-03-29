@@ -12,8 +12,9 @@ var mongoose   = require('mongoose');
 
 const path = require ('path');
 
-var userController = require('./src/users/users.controller');
+var userController = require('./src/users/users.controller')
 var categoryController = require('./src/categories/categories.controller');
+var communityController = require('./src/communities/communities.controller');
 // SCHEMAS
 
 
@@ -27,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true});
+mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true, useFindAndModify: false});
 
 app.use(express.static('www'));
 app.set('port', process.env.PORT || 5000);
@@ -60,6 +61,18 @@ router.route('/categories/:category_id')
 	.delete(categoryController.deleteCategory)
 	.put(categoryController.updateCategory)
 	.get(categoryController.getCategory)
+;
+
+// community routes
+
+router.route('/communities')
+	.post(communityController.addCommunity)
+;
+
+router.route('/communities/:community_id')
+	.get(communityController.getCommunity)
+	.delete(communityController.deleteCommunity)
+	.put(communityController.updateCommunity)
 ;
 
 // REGISTER OUR ROUTES -------------------------------
