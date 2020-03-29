@@ -1,22 +1,8 @@
-/*
-
-	The point of this class is to separate the mongoose/mongodb methods and functions from
-	the routing/endpoint logic that is in main.js
-
-	endpoints to do:
-	- delete user
-	- update user
-	- get user by id
-	- get user by username
-	- get all the users
-	- get all the users by a bunch of filters
-
-*/
-
 var mongoose   = require('mongoose');
 var schema = require('./users.model');
 var cors = require('cors');
 var userSchema = require('./users.model');
+const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 
 const UserController = {
 	addUser: async (request, response) => {
