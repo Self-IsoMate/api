@@ -9,7 +9,8 @@ const communitySchema = new mongoose.Schema({
     type: Buffer
   },
   categoryId: {
-    type: String
+    type: String,
+    required: [true, 'categoryId is required']
   },
   dateCreated: {
     type: Date,

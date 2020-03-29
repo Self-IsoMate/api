@@ -15,6 +15,7 @@ const path = require ('path');
 var userController = require('./src/users/users.controller')
 var categoryController = require('./src/categories/categories.controller');
 var communityController = require('./src/communities/communities.controller');
+var challengesController = require('./src/challenges/challenges.controller');
 // SCHEMAS
 
 
@@ -75,7 +76,17 @@ router.route('/communities/:community_id')
 	.delete(communityController.deleteCommunity)
 	.put(communityController.updateCommunity)
 ;
+// challenges routes
+router.route('/challenges')
+	.post(challengesController.addChallenge)
+	.get(challengesController.getChallenges)
+;
 
+router.route('/challenges/:challenge_id')
+	.delete(challengesController.deleteChallenge)
+	.put(challengesController.updateChallenge)
+	//.get(challengesController.getChallenge)
+;
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
