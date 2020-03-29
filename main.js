@@ -80,6 +80,10 @@ router.route('/communities/:community_id')
 router.route('/categories/:category_name/communities')
 	.get(communityController.getCommunitiesFromCategory);
 
+router.route('/users/:user_id/communities')
+	.post(userController.addCommunity)
+;
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);

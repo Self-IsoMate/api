@@ -2,7 +2,10 @@ var mongoose   = require('mongoose');
 var schema = require('./users.model');
 var cors = require('cors');
 var userSchema = require('./users.model');
+var communitySchema = require('../communities/communities.model');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
+const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
+
 var bodyParser = require('body-parser');
 
 const UserController = {
@@ -72,6 +75,42 @@ const UserController = {
 				res.send(response);
 			}
 		});
+	},
+
+	addCommunity: async (request, response) => {
+		// pass in a user id
+		// pass in a community id
+		try {
+			var userId = request.body.userId || request.params.user_id;
+			var communityId = request.body.communityId;
+
+			var user = await User.findById(userId, (err) => {
+				if (err)
+					throw err;
+			})
+
+			var community = await Community.findById(communityId, (err) => {
+				if (err)
+					throw err;
+			})
+
+			if (user.communities) {
+				user.communities.push(community);
+			} else {
+				user.communities = [community];
+			}
+
+			User.updateOne({ _id: userId }, user, (err, res) => {
+				if (err)
+					throw err;
+
+				if (res)
+					response.send(res);
+			})
+
+		} catch (err) {
+			response.send(err);
+		}
 	}
 };
 

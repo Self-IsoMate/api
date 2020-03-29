@@ -28,6 +28,9 @@ const User = new mongoose.Schema({
   dateCreated: {
     type: Date,
     required: [true, 'Date created is required']
+  },
+  communities: {
+    type: Array
   }
 })
 
