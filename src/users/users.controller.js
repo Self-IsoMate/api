@@ -1,40 +1,75 @@
-/*
-
-	The point of this class is to separate the mongoose/mongodb methods and functions from
-	the routing/endpoint logic that is in main.js
-
-	endpoints to do:
-	- delete user
-	- update user
-	- get user by id
-	- get user by username
-	- get all the users
-	- get all the users by a bunch of filters
-
-*/
-
 var mongoose   = require('mongoose');
 var schema = require('./users.model');
 var cors = require('cors');
+var userSchema = require('./users.model');
+const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
+var bodyParser = require('body-parser');
 
 const UserController = {
 	addUser: async (request, response) => {
-		var user = new User({
-			username: request.body.username,
-			password: request.body.password,
-			isMentor: request.body.isMentor,
-			mentorSubjects: request.body.mentorSubjects,
-			email: request.body.email,
-			interests: request.body.interests,
-			profilePicture: request.body.profilePicture,
-			dateCreated: request.body.dateCreated
-		});
+
+		try {
+			var user = new User({
+				username: request.body.username,
+				password: request.body.password,
+				isMentor: request.body.isMentor,
+				mentorSubjects: request.body.mentorSubjects,
+				email: request.body.email,
+				interests: request.body.interests,
+				profilePicture: request.body.profilePicture,
+				dateCreated: Date.parse(request.body.dateCreated)
+			});
+
+		}
+		catch (err) {
+			console.log(err);
+		}
 
 		user.save((err) => {
 			if (err) {
 				response.send(err);
 			} else {
 				response.json({ success: true, user: user });
+			}
+		});
+	},
+
+	deleteUser: async (request, response) => {
+
+		User.deleteOne({ _id: request.params.user_id }, (err, res) => {
+			if (err) {
+				response.send(err);
+			}
+
+			if (res) {
+				response.json({ success: true, message: `successfully deleted user (${request.params.user_id})` });
+			}
+			
+		});
+	},
+
+	updateUser: async (request, response) => {
+
+		User.findByIdAndUpdate(request.params.user_id, request.body, (err, res) => {
+			if (err) {
+				response.send(err);
+			}
+
+			if (res) {
+				response.json({ success: true, update: res });
+			}
+		});
+
+	},
+
+	findUser: async (req, res) => {
+		var parameters = req.query;
+		User.find((error, response) => {
+			if (error) {
+				res.send(error);
+			}
+			if (response) {
+				res.send(response);
 			}
 		});
 	}

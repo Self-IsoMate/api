@@ -16,7 +16,7 @@ var userController = require('./src/users/users.controller');
 // SCHEMAS
 
 
-const CONNECTION_STRING = 'mongodb+srv://sophie@admin:applesAndOranges@self-isomatedb-8bnuw.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const CONNECTION_STRING = 'mongodb+srv://sophie:applesAndOranges@self-isomatedb-8bnuw.gcp.mongodb.net/test?retryWrites=true&w=majority';
 
 // FUNCTIONS FOR API
 
@@ -37,16 +37,12 @@ var router = express.Router();              // get an instance of the express Ro
 
 // more routes for our API will happen here
 
-router.route('/add')
-    .post((req, res) => {
-        userController.addUser(req, res)
-            .then((response) => {
-                res.json(response);
-            })
-            .catch((err) => {
-                res.send(err);
-            })
-        });
+router.route('/users')
+    .post(userController.addUser);
+
+router.route('/users/:user_id')
+    .delete(userController.deleteUser)
+    .put(userController.updateUser);
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
