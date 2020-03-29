@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const userSchema = new mongoose.Schema({
+const postsSchema = new mongoose.Schema({
   media: {
     type: Buffer
   },
@@ -12,18 +12,20 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Body is required']
   },
-  userId: {
-    type: String,
+  user: {
+    type: mongoose.Schema.Types.Mixed,
     required: [true, 'User is required']
   },
-  communityId: {
-    type: String,
-    required: [true, 'Community is required']
+  community: {
+    type: mongoose.Schema.Types.Mixed,
+    required: [true, 'Community is required']  
   },
   datePosted: {
     type: Date,
-    required: [true, 'Posted date is required']
+  },
+  dateEdited: {
+    type: Date
   }
 })
 
-module.exports = userSchema
+module.exports = postsSchema

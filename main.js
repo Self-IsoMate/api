@@ -16,6 +16,8 @@ var userController = require('./src/users/users.controller')
 var categoryController = require('./src/categories/categories.controller');
 var communityController = require('./src/communities/communities.controller');
 var challengesController = require('./src/challenges/challenges.controller');
+var postsController = require('./src/posts/posts.controller')
+
 // SCHEMAS
 
 
@@ -87,6 +89,19 @@ router.route('/challenges/:challenge_id')
 	.put(challengesController.updateChallenge)
 	.get(challengesController.getChallenge)
 ;
+// posts routes
+router.route('/posts')
+	.post(postsController.addPost)
+	.get(postsController.searchPosts)
+;
+
+router.route('/posts/:post_id')
+	.delete(postsController.deletePost)
+	.put(postsController.updatePost)
+	.get(postsController.getPost)
+;
+
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
