@@ -28,30 +28,52 @@ const categoriesController = {
 
 	deleteCategory: async (request, response) => {
 
-		User.deleteOne({ _id: request.params.category_id }, (err, res) => {
+		Category.findByIdAndDelete( request.params.category_id , (err, res) => {
 			if (err) {
 				response.send(err);
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully deleted category (${request.params.user_id})` });
+				response.json({ success: true, message: `successfully deleted category (${res._id})` });
 			}
 			
 		});
 	},
 
-	updateUser: async (request, response) => {
+	updateCategory: async (request, response) => {
 
-		User.findByIdAndUpdate(request.params.category_id, request.body, (err, res) => {
+		console.log(request.params.category_id);
+
+		Category.findByIdAndUpdate(request.params.category_id, request.body, (err, res) => {
 			if (err) {
 				response.send(err);
 			}
 
 			if (res) {
-				response.json({ success: true, update: res });
+				response.json({ success: true, message: `successfully updated category (${res._id})` });
 			}
 		});
 
+	},
+
+	getCategories: async (request, response) => {
+		Category.find((err, result) => {
+			if (err)
+				response.send(err);
+			
+			if (result)
+				response.send(result);
+		})
+	},
+
+	getCategory: async (request, response) => {
+		Category.findById(request.params.category_id, (err, res) => {
+			if (err)
+				response.send(err);
+			
+			if (res)
+				response.send(res);
+		});
 	}
 };
 

@@ -13,6 +13,7 @@ var mongoose   = require('mongoose');
 const path = require ('path');
 
 var userController = require('./src/users/users.controller');
+var categoryController = require('./src/categories/categories.controller');
 // SCHEMAS
 
 
@@ -37,12 +38,29 @@ var router = express.Router();              // get an instance of the express Ro
 
 // more routes for our API will happen here
 
+// User routes
+
 router.route('/users')
-    .post(userController.addUser);
+	.post(userController.addUser)
+;
 
 router.route('/users/:user_id')
     .delete(userController.deleteUser)
-    .put(userController.updateUser);
+	.put(userController.updateUser)
+;
+
+// Categories routes
+
+router.route('/categories')
+	.post(categoryController.addCategory)
+	.get(categoryController.getCategories)
+;
+
+router.route('/categories/:category_id')
+	.delete(categoryController.deleteCategory)
+	.put(categoryController.updateCategory)
+	.get(categoryController.getCategory)
+;
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
