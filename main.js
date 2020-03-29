@@ -43,6 +43,7 @@ var router = express.Router();              // get an instance of the express Ro
 
 router.route('/users')
 	.post(userController.addUser)
+	.get(userController.findUser)
 ;
 
 router.route('/users/:user_id')
