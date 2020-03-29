@@ -37,13 +37,15 @@ var router = express.Router();              // get an instance of the express Ro
 
 // more routes for our API will happen here
 
-router.route('/add')
+router.route('/users')
     .post(userController.addUser);
-    
-router.route('/hey').get((req, res) => {
-    console.log("HI");
-    res.json({message: "hi"});
-});
+
+router.route('/users/:user_id')
+    .delete((req, res) => {
+        console.log(`hey hey hey`);
+        userController.deleteUser(req, res);
+    })
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);

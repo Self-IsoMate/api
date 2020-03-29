@@ -32,6 +32,20 @@ const UserController = {
 				response.json({ success: true, user: user });
 			}
 		});
+	},
+
+	deleteUser: async (request, response) => {
+
+		User.deleteOne({ _id: request.params.user_id }, (err, res) => {
+			if (err) {
+				response.send(err);
+			}
+
+			if (res) {
+				response.json({ success: true, message: `successfully deleted user (${request.params.user_id})` });
+			}
+			
+		});
 	}
 };
 
