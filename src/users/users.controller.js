@@ -60,6 +60,18 @@ const UserController = {
 			}
 		});
 
+	},
+
+	findUser: async (req, res) => {
+		var parameters = req.query;
+		User.find((error, response) => {
+			if (error) {
+				res.send(error);
+			}
+			if (response) {
+				res.send(response);
+			}
+		});
 	}
 };
 
