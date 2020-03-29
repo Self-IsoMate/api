@@ -1,0 +1,17 @@
+{
+  "name": "self-isomate-api",
+  "version": "1.0.0",
+  "description": "Self IsoMate API",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "~4.0.0",
+    "mongoose": "~3.6.13",
+    "body-parser": "~1.0.1",
+    "cors": "^2.8.5"
+  }
+}
