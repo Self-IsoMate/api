@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const User = new mongoose.Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: [true, 'Username is required']
@@ -31,4 +31,4 @@ const User = new mongoose.Schema({
   }
 })
 
-module.exports = userSchema
+module.exports = mongoose.model('user', userSchema, 'user_registration'); //export the model
