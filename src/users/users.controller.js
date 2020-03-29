@@ -67,7 +67,7 @@ const UserController = {
 
 	findUser: async (req, res) => {
 		var parameters = req.query;
-		User.find((error, response) => {
+		User.find(parameters, (error, response) => {
 			if (error) {
 				res.send(error);
 			}
@@ -78,8 +78,6 @@ const UserController = {
 	},
 
 	addCommunity: async (request, response) => {
-		// pass in a user id
-		// pass in a community id
 		try {
 			var userId = request.body.userId || request.params.user_id;
 			var communityId = request.body.communityId;
@@ -110,6 +108,34 @@ const UserController = {
 
 		} catch (err) {
 			response.send(err);
+		}
+	},
+
+	removeCommunity: async (request, response) => {
+		try {
+			var userId = request.params.user_id;
+			var communityId = request.body.communityId;
+
+			var user = User.findById(userId, (err) => {
+				if (err)
+					throw err;
+			});
+
+			user.communities = user.communities.filter(c => c._id != communityId);
+
+			console.log(user.communities);
+
+			User.findByIdAndUpdate(userId, user, (err, res) => {
+				if (err)
+					throw err;
+
+				if (res)
+					response.send(res);
+			})
+
+		} catch (err) {
+			response.send(err);
+			console.log(err);
 		}
 	}
 };
