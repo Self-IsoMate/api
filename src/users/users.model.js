@@ -31,4 +31,4 @@ const User = new mongoose.Schema({
   }
 })
 
-module.exports = userSchema
+module.exports = User;

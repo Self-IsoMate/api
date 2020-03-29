@@ -12,6 +12,7 @@ var mongoose   = require('mongoose');
 
 const path = require ('path');
 
+var userController = require('./src/users/users.controller');
 // SCHEMAS
 
 
@@ -38,7 +39,7 @@ var router = express.Router();              // get an instance of the express Ro
 
 router.route('/add')
     .post((req, res) => {
-        UserController.addUser(req, res)
+        userController.addUser(req, res)
             .then((response) => {
                 res.json(response);
             })
