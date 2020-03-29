@@ -68,6 +68,7 @@ router.route('/categories/:category_id')
 
 router.route('/communities')
 	.post(communityController.addCommunity)
+	.get(communityController.getCommunities)
 ;
 
 router.route('/communities/:community_id')
