@@ -46,6 +46,20 @@ const UserController = {
 			}
 			
 		});
+	},
+
+	updateUser: async (request, response) => {
+
+		User.findByIdAndUpdate(request.params.user_id, request.body, (err, res) => {
+			if (err) {
+				response.send(err);
+			}
+
+			if (res) {
+				response.json({ success: true, update: res });
+			}
+		});
+
 	}
 };
 

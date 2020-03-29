@@ -41,10 +41,8 @@ router.route('/users')
     .post(userController.addUser);
 
 router.route('/users/:user_id')
-    .delete((req, res) => {
-        console.log(`hey hey hey`);
-        userController.deleteUser(req, res);
-    })
+    .delete(userController.deleteUser)
+    .put(userController.updateUser);
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
