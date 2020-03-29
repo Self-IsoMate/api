@@ -74,6 +74,18 @@ const categoriesController = {
 			if (res)
 				response.send(res);
 		});
+	},
+
+	searchCategories: async (request, response) => {
+		var parameters = request.query;
+
+		Category.find(parameters, (err, res) => {
+			if (err)
+				response.send(err);
+			
+			if (res)
+				response.send(res);
+		});
 	}
 };
 

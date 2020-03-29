@@ -53,7 +53,7 @@ router.route('/users/:user_id')
 
 router.route('/categories')
 	.post(categoryController.addCategory)
-	.get(categoryController.getCategories)
+	.get(categoryController.searchCategories)
 ;
 
 router.route('/categories/:category_id')
