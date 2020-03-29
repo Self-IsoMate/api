@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const communitySchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Name is required']
@@ -8,13 +8,13 @@ const userSchema = new mongoose.Schema({
   image: {
     type: Buffer
   },
-  category: {
+  categoryId: {
     type: String
   },
   dateCreated: {
     type: Date,
     required: [true, 'Created date is required']
   }
-})
+});
 
-module.exports = userSchema
+module.exports = communitySchema;
