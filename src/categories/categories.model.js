@@ -1,7 +1,16 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-  // TO DO
-})
+const schema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Name is required']
+  },
+  image: {
+    type: Buffer
+  },
+  parentCategoryId: {
+    type: String
+  }
+});
 
-module.exports = userSchema
+module.exports = schema;
