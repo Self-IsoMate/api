@@ -79,13 +79,13 @@ router.route('/communities/:community_id')
 // challenges routes
 router.route('/challenges')
 	.post(challengesController.addChallenge)
-	.get(challengesController.getChallenges)
+	.get(challengesController.searchChallenges)
 ;
 
 router.route('/challenges/:challenge_id')
 	.delete(challengesController.deleteChallenge)
 	.put(challengesController.updateChallenge)
-	//.get(challengesController.getChallenge)
+	.get(challengesController.getChallenge)
 ;
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

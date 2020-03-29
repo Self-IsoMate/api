@@ -59,14 +59,26 @@ const challengesController = {
 
     },
     
-    getChallenges: async (request, response) => {
-		Challenge.find((err, result) => {
+    searchChallenges: async (request, response) => {
+        var parameters = request.query;
+
+		Challenge.find(parameters,(err, result) => {
 			if (err)
 				response.send(err);
 			
 			if (result)
 				response.send(result);
 		})
+    },
+   
+    getChallenge: async (request, response) => {
+		Challenge.findById(request.params.challenge_id, (err, res) => {
+			if (err)
+				response.send(err);
+			
+			if (res)
+				response.send(res);
+		});
 	}
 
 };
