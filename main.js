@@ -26,12 +26,13 @@ const CONNECTION_STRING = 'mongodb+srv://sophie:applesAndOranges@self-isomatedb-
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
 
-mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true, useFindAndModify: false});
+mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true, useFindAndModify: false }, (err) => {
+	console.log(err);
+})
 
 app.use(express.static('www'));
-app.set('port', process.env.PORT || 5000);
+app.set('port', process.env.PORT || 8080);
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -85,6 +86,11 @@ router.route('/users/:user_id/communities')
 	.delete(userController.removeCommunity)
 	.get(userController.getCommunitiesFromUser)
 ;
+
+router.route('/message')
+	.get((req, res) => {
+		res.json({message: "hello"});
+	})
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
