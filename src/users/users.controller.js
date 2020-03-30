@@ -1,4 +1,5 @@
 var mongoose   = require('mongoose');
+var crypto = require('crypto');
 var schema = require('./users.model');
 var cors = require('cors');
 var userSchema = require('./users.model');
@@ -10,8 +11,19 @@ var bodyParser = require('body-parser');
 
 const UserController = {
 	addUser: async (request, response) => {
-
 		try {
+			var existingUser = await User.find({ username: request.body.username });
+
+			if (existingUser && existingUser.username) {
+				throw "username already used";
+			}
+
+			existingUser = await User.find({ email: request.body.email });
+
+			if (existingUser && existingUser.email) {
+				throw "email already used";
+			}
+
 			var user = new User({
 				username: request.body.username,
 				password: request.body.password,
@@ -20,21 +32,22 @@ const UserController = {
 				email: request.body.email,
 				interests: request.body.interests,
 				profilePicture: request.body.profilePicture,
-				dateCreated: Date.parse(request.body.dateCreated)
+				dateCreated: new Date()
 			});
 
+			user.setPassword(request.body.password);
+			
+			user.save((err) => {
+				if (err) {
+					response.send(err);
+				} else {
+					response.json({ success: true, user: user });
+				}
+			});
 		}
 		catch (err) {
-			console.log(err);
+			response.send(err);
 		}
-
-		user.save((err) => {
-			if (err) {
-				response.send(err);
-			} else {
-				response.json({ success: true, user: user });
-			}
-		});
 	},
 
 	deleteUser: async (request, response) => {
@@ -146,6 +159,29 @@ const UserController = {
 
 			if (res)
 				response.send(res);
+		});
+	},
+
+	requestLogin: async (request, response) => {
+		var username = request.body.username;
+		var password = request.body.password;
+
+		User.findOne({ username: username }, (err, res) => {
+			if (err)
+				response.send(err);
+
+			if (res) {
+				if (res.validPassword(password)) {
+					response.json({
+						loginSuccess: true
+					})
+				} else {
+					response.json({
+						loginSuccess: false
+					})
+				}
+			}
+
 		});
 	}
 };
