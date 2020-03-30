@@ -2,7 +2,10 @@ var mongoose   = require('mongoose');
 var schema = require('./users.model');
 var cors = require('cors');
 var userSchema = require('./users.model');
+var communitySchema = require('../communities/communities.model');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
+const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
+
 var bodyParser = require('body-parser');
 
 const UserController = {
@@ -64,13 +67,85 @@ const UserController = {
 
 	findUser: async (req, res) => {
 		var parameters = req.query;
-		User.find((error, response) => {
+		User.find(parameters, (error, response) => {
 			if (error) {
 				res.send(error);
 			}
 			if (response) {
 				res.send(response);
 			}
+		});
+	},
+
+	addCommunity: async (request, response) => {
+		try {
+			var userId = request.body.userId || request.params.user_id;
+			var communityId = request.body.communityId;
+
+			var user = await User.findById(userId, (err) => {
+				if (err)
+					throw err;
+			})
+
+			var community = await Community.findById(communityId, (err) => {
+				if (err)
+					throw err;
+			})
+
+			if (user.communities) {
+				user.communities.push(community);
+			} else {
+				user.communities = [community];
+			}
+
+			User.updateOne({ _id: userId }, user, (err, res) => {
+				if (err)
+					throw err;
+
+				if (res)
+					response.send(res);
+			})
+
+		} catch (err) {
+			response.send(err);
+		}
+	},
+
+	removeCommunity: async (request, response) => {
+		try {
+			var userId = request.params.user_id;
+			var communityId = request.body.communityId;
+
+			var user = User.findById(userId, (err) => {
+				if (err)
+					throw err;
+			});
+
+			user.communities = user.communities.filter(c => c._id != communityId);
+
+			console.log(user.communities);
+
+			User.findByIdAndUpdate(userId, user, (err, res) => {
+				if (err)
+					throw err;
+
+				if (res)
+					response.send(res);
+			})
+
+		} catch (err) {
+			response.send(err);
+			console.log(err);
+		}
+	},
+
+	getCommunitiesFromUser: async (request, response) => {
+		User.findById(request.params.user_id, "communities", (err, res) => {
+			if (err)
+				response.send(err);
+
+			if (res)
+				response.send(res);
 		});
 	}
 };
