@@ -9,3 +9,4 @@
 ## Outstanding changes
 
 - Make sure all responses follow a similar structure (bit of a mix at the moment apart from users)
+- Maybe add some kind of credentials to the API, like you have to use a key or username & password
