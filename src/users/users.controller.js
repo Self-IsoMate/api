@@ -172,7 +172,8 @@ const UserController = {
 			if (res) {
 				if (res.validPassword(password)) {
 					response.json({
-						loginSuccess: true
+						loginSuccess: true,
+						user: res
 					})
 				} else {
 					response.json({
