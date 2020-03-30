@@ -85,7 +85,7 @@ const UserController = {
 				response.send({success: false, message: err });
 			}
 			if (response) {
-				response.json({ success: true, user: response });
+				response.json({ success: true, users: response });
 			}
 		});
 	},
