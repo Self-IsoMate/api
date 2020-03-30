@@ -30,7 +30,7 @@ const UserController = {
 
 		user.save((err) => {
 			if (err) {
-				response.send(err);
+				response.send({success: false, message: err });
 			} else {
 				response.json({ success: true, user: user });
 			}
@@ -41,7 +41,7 @@ const UserController = {
 
 		User.deleteOne({ _id: request.params.user_id }, (err, res) => {
 			if (err) {
-				response.send(err);
+				response.send({success: false, message: err });
 			}
 
 			if (res) {
@@ -55,7 +55,7 @@ const UserController = {
 
 		User.findByIdAndUpdate(request.params.user_id, request.body, (err, res) => {
 			if (err) {
-				response.send(err);
+				response.send({success: false, message: err });
 			}
 
 			if (res) {
@@ -69,10 +69,10 @@ const UserController = {
 		var parameters = req.query;
 		User.find(parameters, (error, response) => {
 			if (error) {
-				res.send(error);
+				response.send({success: false, message: err });
 			}
 			if (response) {
-				res.send(response);
+				response.json({ success: true, user: response });
 			}
 		});
 	},
@@ -103,11 +103,11 @@ const UserController = {
 					throw err;
 
 				if (res)
-					response.send(res);
+					response.json({ success: true, user: res });
 			})
 
 		} catch (err) {
-			response.send(err);
+			response.send({success: false, message: err });
 		}
 	},
 
@@ -130,22 +130,21 @@ const UserController = {
 					throw err;
 
 				if (res)
-					response.send(res);
+					response.json({ success: true, user: res });
 			})
 
 		} catch (err) {
-			response.send(err);
-			console.log(err);
+			response.send({success: false, message: err });
 		}
 	},
 
 	getCommunitiesFromUser: async (request, response) => {
 		User.findById(request.params.user_id, "communities", (err, res) => {
 			if (err)
-				response.send(err);
+				response.send({success: false, message: err });
 
 			if (res)
-				response.send(res);
+				response.json({ success: true, communities: user });
 		});
 	}
 };
