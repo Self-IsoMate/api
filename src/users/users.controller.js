@@ -34,13 +34,9 @@ const UserController = {
 				profilePicture: request.body.profilePicture,
 				dateCreated: new Date()
 			});
-			
-			console.log("here");
 
 			user.setPassword(request.body.password);
-
-			console.log(user.hash);
-
+			
 			user.save((err) => {
 				if (err) {
 					response.send(err);
