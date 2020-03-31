@@ -32,7 +32,9 @@ const UserController = {
 				email: request.body.email,
 				interests: request.body.interests,
 				profilePicture: request.body.profilePicture,
-				dateCreated: new Date()
+				dateCreated: new Date(),
+				// Setting to default profile picture
+				profilePicture: 'https://storage.cloud.google.com/self-isomate-images/profile-pictures/default-profile-pic.png'
 			});
 
 			user.setPassword(request.body.password);

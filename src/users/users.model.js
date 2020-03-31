@@ -20,7 +20,7 @@ var User = new mongoose.Schema({
     type: Array
   },
   profilePicture: {
-    type: Buffer
+    type: String
   },
   dateCreated: {
     type: Date,
