@@ -6,7 +6,7 @@ const schema = new mongoose.Schema({
     required: [true, 'Name is required']
   },
   image: {
-    type: Buffer
+    type: String
   },
   parentCategoryId: {
     type: String

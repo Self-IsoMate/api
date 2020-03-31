@@ -7,7 +7,7 @@ const schema = new mongoose.Schema({
     required: [true, 'Title is required']
   },
   image: {
-    type: Buffer
+    type: String
   },
   description: {
     type: String,

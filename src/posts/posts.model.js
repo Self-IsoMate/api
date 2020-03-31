@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const postsSchema = new mongoose.Schema({
   media: {
-    type: Buffer
+    type: String
   },
   title: {
     type: String,
