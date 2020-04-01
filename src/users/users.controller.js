@@ -6,6 +6,19 @@ var userSchema = require('./users.model');
 var communitySchema = require('../communities/communities.model');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
+const mailer = require("nodemailer");
+require ('dotenv').config();
+var fs = require('fs');
+
+
+const transporter = mailer.createTransport({
+    service:"gmail",
+    auth:{
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASS
+    }
+}
+)
 
 var bodyParser = require('body-parser');
 
@@ -43,7 +56,35 @@ const UserController = {
 				if (err) {
 					response.send(err);
 				} else {
+					fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
+						if (err) {
+							console.log(err);
+						  }
+						  else {
+					let body = {
+
+						from: process.env.EMAIL_USER,
+						to: request.body.email,
+						subject: "Welcome to Self-Isomate, please confirm email address",
+						html:html
+					
+					}
+					
+					
+					transporter.sendMail(body, (errormail, resultmail)=>{
+
+						if(errormail){
+							console.log(errormail);
+							response.send(errormail);
+						}  
+						console.log(resultmail);
+					
+					})
+  
+
 					response.json({ success: true, user: user });
+					}
+				});
 				}
 			});
 		}
