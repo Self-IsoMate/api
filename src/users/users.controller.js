@@ -3,13 +3,22 @@ var crypto = require('crypto');
 var schema = require('./users.model');
 var cors = require('cors');
 var userSchema = require('./users.model');
+var tokensSchema = require('../tokens/tokens.model');
 var communitySchema = require('../communities/communities.model');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
+const Token = mongoose.model('token', tokensSchema, 'tokens'); //export the model
+
 const mailer = require("nodemailer");
 require ('dotenv').config();
 var fs = require('fs');
 
+/*
+var tokenController = require('../tokens/tokens.controller')
+var tokenSchema = require('../tokens/tokens.model');
+const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
+
+*/
 
 const transporter = mailer.createTransport({
     service:"gmail",
@@ -57,6 +66,31 @@ const UserController = {
 				if (err) {
 					response.send(err);
 				} else {
+
+					//create token
+					var userToken = Math.floor(1000 + Math.random() * 9000);
+					try {
+						var token = new Token({
+							email: request.body.email,
+							token: userToken.toString()             
+						});
+			
+					}
+					catch (errToken) {
+						console.log(errToken);
+					}
+			
+					token.save((errToken) => {
+						if (errToken) {
+							response.send(errToken);
+						} else {
+							console.log(token);
+						}
+					});
+
+
+					//send in the email
+
 					fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
 						if (err) {
 							console.log(err);
@@ -79,7 +113,7 @@ const UserController = {
 							response.send(errormail);
 						}  
 						console.log(resultmail);
-					
+						
 					})
   
 
@@ -206,9 +240,14 @@ const UserController = {
 	},
 
 	verifyUser: async (request, response) => {
-		if(request.params.token == "123"){ //if token is active + if email not already verified
+		console.log(request.params.email);
 
-			User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
+		var userEmailToken = await Token.findOne({ email: request.params.email });
+
+if(User.findOne({ email: request.params.email }).isVerified=="true"){
+		if(request.params.token == userEmailToken.token){ //email non verificata
+
+			User.findOneAndUpdate({email:request.params.email}, {isVerified:false}, (err, res) => {
 				if (err) {
 					response.send({success: false, message: err });
 				}
@@ -220,9 +259,13 @@ const UserController = {
 
 		}
 		else{
-		console.log("error on Token");
+		console.log("invalid token");
 		return (false)
 	}
+}else{
+	console.log("Email already verified");
+
+}
 	},
 
 	requestLogin: async (request, response) => {

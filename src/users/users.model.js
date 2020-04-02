@@ -18,7 +18,7 @@ var User = new mongoose.Schema({
   },
   isVerified: {
     type: Boolean,
-    required: [true, 'isVerified is required'] //make default "no"
+    required: [true, 'isVerified is required'] //made default "no"
 
   },
   interests: {
