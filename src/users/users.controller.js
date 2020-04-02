@@ -43,6 +43,7 @@ const UserController = {
 				isMentor: request.body.isMentor,
 				mentorSubjects: request.body.mentorSubjects,
 				email: request.body.email,
+				isVerified:false,
 				interests: request.body.interests,
 				profilePicture: request.body.profilePicture,
 				dateCreated: new Date(),
@@ -202,6 +203,26 @@ const UserController = {
 			if (res)
 				response.json({ success: true, communities: user });
 		});
+	},
+
+	verifyUser: async (request, response) => {
+		if(request.params.token == "123"){ //if token is active + if email not already verified
+
+			User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
+				if (err) {
+					response.send({success: false, message: err });
+				}
+	
+				if (res) {
+					response.json({ success: true, update: res });
+				}
+			});
+
+		}
+		else{
+		console.log("error on Token");
+		return (false)
+	}
 	},
 
 	requestLogin: async (request, response) => {
