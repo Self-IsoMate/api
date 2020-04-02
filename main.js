@@ -29,6 +29,7 @@ const CONNECTION_STRING = 'mongodb+srv://sophie:applesAndOranges@self-isomatedb-
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true, useFindAndModify: false });
 

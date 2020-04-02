@@ -96,7 +96,7 @@ const UserController = {
 			});
 		}
 		catch (err) {
-			response.send(err);
+			response.json({ success: false, message: err });
 		}
 	},
 
