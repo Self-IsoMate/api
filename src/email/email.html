@@ -6,7 +6,9 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>Welcome Self-IsoMate Email Confirmation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
   <style type="text/css">
+  
   /**
    * Google webfonts. Recommended to include the .woff version for cross-client compatibility.
    */
@@ -190,9 +192,8 @@
                     <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
                         <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
-                          <a href="https://.com" target="_blank" 
-                          style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">
-                            Click here for confirming your email address and creating account</a>
+                          <button id="myB">Click meeee</button>
+                          
                         </td>
                       </tr>
                     </table>
@@ -203,12 +204,12 @@
           </tr>
           <!-- end button -->
           <!-- start copy -->
-          <tr>
+          <!--tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
               <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser:</p>
               <p style="margin: 0;"><a href="https://sendgrid.com" target="_blank">https://same-link-as-button.url/xxx-xxx-xxxx</a></p>
             </td>
-          </tr>
+          </tr-->
           <!-- end copy -->
 
           <!-- start copy -->
@@ -269,4 +270,18 @@
   <!-- end body -->
 
 </body>
+<script>
+
+document.querySelector('#myB').addEventListener('click',()=>{
+  console.log("data");
+
+axios.put('localhost:8080/api/verify/TOKENREPLACEMENT').then(data=>{//tokenreplacement will be exchanged with real token and email
+
+  console.log(data);
+})
+
+}
+)
+
+</script>
 </html>

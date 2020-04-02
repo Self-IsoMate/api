@@ -96,12 +96,16 @@ const UserController = {
 							console.log(err);
 						  }
 						  else {
+							  console.log(request.body.email+"/"+userToken.toString())
+							var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
+
+
 					let body = {
 
 						from: process.env.EMAIL_USER,
 						to: request.body.email,
 						subject: "Welcome to Self-Isomate, please confirm email address",
-						html:html
+						html:customHTML
 					
 					}
 					
@@ -243,11 +247,16 @@ const UserController = {
 		console.log(request.params.email);
 
 		var userEmailToken = await Token.findOne({ email: request.params.email });
+		var userEmail = await User.findOne({ email: request.params.email });
 
-if(User.findOne({ email: request.params.email }).isVerified=="true"){
+console.log(userEmail.isVerified);
+console.log(userEmailToken.token);
+
+
+if(userEmail.isVerified == false){
 		if(request.params.token == userEmailToken.token){ //email non verificata
 
-			User.findOneAndUpdate({email:request.params.email}, {isVerified:false}, (err, res) => {
+			User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
 				if (err) {
 					response.send({success: false, message: err });
 				}
