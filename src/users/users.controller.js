@@ -25,17 +25,23 @@ var bodyParser = require('body-parser');
 const UserController = {
 	addUser: async (request, response) => {
 		try {
-			var existingUser = await User.find({ username: request.body.username });
+			console.log("here");
+
+			var existingUser = await User.findOne({ username: request.body.username });
 
 			if (existingUser && existingUser.username) {
 				throw "username already used";
 			}
 
-			existingUser = await User.find({ email: request.body.email });
+			console.log(existingUser);
+
+			existingUser = await User.findOne({ email: request.body.email });
 
 			if (existingUser && existingUser.email) {
 				throw "email already used";
 			}
+
+			console.log(existingUser);
 
 			var user = new User({
 				username: request.body.username,
