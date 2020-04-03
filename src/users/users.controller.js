@@ -13,13 +13,6 @@ const mailer = require("nodemailer");
 require ('dotenv').config();
 var fs = require('fs');
 
-/*
-var tokenController = require('../tokens/tokens.controller')
-var tokenSchema = require('../tokens/tokens.model');
-const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
-
-*/
-
 const transporter = mailer.createTransport({
     service:"Outlook365", //
     auth:{
