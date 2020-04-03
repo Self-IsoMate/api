@@ -11,27 +11,38 @@ const postsController = {
 //    var array = [];
 
         addPost: async (request, response) => {
-    
-            try {
-                var post = new Post({
-                    media: request.body.media,
-                    title: request.body.title,
-                    body: request.body.body,
-                    user: await User.findById(request.body.user),
-                    community: await Community.findById(request.body.community),
-                    datePosted: Date.now()
-                });
-    
-            }
-            catch (err) {
-                console.log(err);
-            }
-    
-            post.save((err) => {
+
+            var user = User.findById(request.body.user)
+
+            var community = Community.findById(request.body.community)
+
+            Promise.all([user, community]).then((success, failed) => {
+                if (success) {
+
+                    var [user, community] = success;
+
+                    var post = new Post({
+                        media: request.body.media,
+                        title: request.body.title,
+                        body: request.body.body,
+                        user: user,
+                        community: community ,
+                        datePosted: Date.now()
+                    });
+            
+                    post.save((err, post) => {
+                        if (err) {
+                            console.log("error saving post");
+                            response.send(err);
+                        } else {
+                            response.json({ success: true, post: post });
+                        }
+                    });
+                }
+            })
+            .catch((err) => {
                 if (err) {
-                    response.send(err);
-                } else {
-                    response.json({ success: true, post: post });
+                    response.json({ success: false, message: err });
                 }
             });
         },
