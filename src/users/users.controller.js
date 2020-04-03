@@ -19,21 +19,21 @@ const transporter = mailer.createTransport({
         user:process.env.EMAIL_USER,
         pass:process.env.EMAIL_PASS
     }
-}
-)
+});
 
 var bodyParser = require('body-parser');
 
 const UserController = {
 	addUser: async (request, response) => {
 		try {
-			var existingUser = await User.find({ username: request.body.username });
+
+			var existingUser = await User.findOne({ username: request.body.username });
 
 			if (existingUser && existingUser.username) {
 				throw "username already used";
 			}
 
-			existingUser = await User.find({ email: request.body.email });
+			existingUser = await User.findOne({ email: request.body.email });
 
 			if (existingUser && existingUser.email) {
 				throw "email already used";
@@ -120,7 +120,7 @@ const UserController = {
 			});
 		}
 		catch (err) {
-			response.send(err);
+			response.json({ success: false, message: err });
 		}
 	},
 
