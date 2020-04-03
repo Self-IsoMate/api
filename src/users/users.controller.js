@@ -17,15 +17,13 @@ const transporter = mailer.createTransport({
         user:process.env.EMAIL_USER,
         pass:process.env.EMAIL_PASS
     }
-}
-)
+});
 
 var bodyParser = require('body-parser');
 
 const UserController = {
 	addUser: async (request, response) => {
 		try {
-			console.log("here");
 
 			var existingUser = await User.findOne({ username: request.body.username });
 
@@ -33,15 +31,11 @@ const UserController = {
 				throw "username already used";
 			}
 
-			console.log(existingUser);
-
 			existingUser = await User.findOne({ email: request.body.email });
 
 			if (existingUser && existingUser.email) {
 				throw "email already used";
 			}
-
-			console.log(existingUser);
 
 			var user = new User({
 				username: request.body.username,
@@ -61,37 +55,32 @@ const UserController = {
 			
 			user.save((err) => {
 				if (err) {
-					response.send(err);
-				} else {
+					throw err;
+				}
+				else
+				{
 					fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
 						if (err) {
 							console.log(err);
-						  }
-						  else {
-					let body = {
+						}
+						else {
+							let body = {
+								from: process.env.EMAIL_USER,
+								to: request.body.email,
+								subject: "Welcome to Self-Isomate, please confirm email address",
+								html:html
+							}
 
-						from: process.env.EMAIL_USER,
-						to: request.body.email,
-						subject: "Welcome to Self-Isomate, please confirm email address",
-						html:html
-					
-					}
-					
-					
-					transporter.sendMail(body, (errormail, resultmail)=>{
-
-						if(errormail){
-							console.log(errormail);
-							response.send(errormail);
-						}  
-						console.log(resultmail);
-					
-					})
-  
-
-					response.json({ success: true, user: user });
-					}
-				});
+							transporter.sendMail(body, (errormail, resultmail) => {
+								if(errormail){
+									response.json({ success: false, message: errormail, user: user });
+								} else if (resultmail) {
+									console.log(resultmail);
+									response.json({ success: true, user: user });
+								}
+							});
+						}
+					});
 				}
 			});
 		}
