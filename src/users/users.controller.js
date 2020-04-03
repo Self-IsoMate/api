@@ -21,7 +21,7 @@ const User = mongoose.model('user', userSchema, 'user_registration'); //export t
 */
 
 const transporter = mailer.createTransport({
-    service:"gmail",
+    service:"Outlook365", //
     auth:{
         user:process.env.EMAIL_USER,
         pass:process.env.EMAIL_PASS
@@ -114,7 +114,6 @@ const UserController = {
 
 						if(errormail){
 							console.log(errormail);
-							response.send(errormail);
 						}  
 						console.log(resultmail);
 						
@@ -249,34 +248,89 @@ const UserController = {
 		var userEmailToken = await Token.findOne({ email: request.params.email });
 		var userEmail = await User.findOne({ email: request.params.email });
 
-console.log(userEmail.isVerified);
-console.log(userEmailToken.token);
+			console.log(userEmail.isVerified);
+			console.log(userEmailToken.token);
 
 
-if(userEmail.isVerified == false){
-		if(request.params.token == userEmailToken.token){ //email non verificata
+			if(userEmail.isVerified == false){
+					if(request.params.token == userEmailToken.token){ //email non verificata
 
-			User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
-				if (err) {
-					response.send({success: false, message: err });
+						User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
+							if (err) {
+								response.send({success: false, message: err });
+							}
+				
+							if (res) {
+								Token.deleteOne({ email:request.params.email }, (err, res) => {
+									if (err) {
+										response.send({success: false, message: err });
+									}
+						
+									if (res) {
+										response.json({ success: true, message: `successfully Email verified (${request.params.email})` });
+									}
+									
+								});
+							}
+						});
+
+					}
+					else{
+					console.log("invalid token");
+					return (false)
 				}
-	
-				if (res) {
-					response.json({ success: true, update: res });
-				}
-			});
+			}else{
+				console.log("Email already verified");
 
-		}
-		else{
-		console.log("invalid token");
-		return (false)
-	}
-}else{
-	console.log("Email already verified");
-
-}
+			}
 	},
 
+	sendVerification: async (request, response) => {
+
+			//create token
+			var userToken = Math.floor(1000 + Math.random() * 9000);
+			try {
+				Token.findOneAndUpdate({email:request.body.email},{token:userToken.toString()})
+			}
+			catch (errToken) {
+				console.log(errToken);
+			}
+
+			fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
+				if (err) {
+					console.log(err);
+				  }
+				  else {
+					  console.log(request.body.email+"/"+userToken.toString())
+					var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
+
+
+			let body = {
+
+				from: process.env.EMAIL_USER,
+				to: request.body.email,
+				subject: "Welcome to Self-Isomate, please confirm email address",
+				html:customHTML
+			
+			}
+			
+			
+			transporter.sendMail(body, (errormail, resultmail)=>{
+
+				if(errormail){
+					console.log(errormail);
+				}  
+				console.log(resultmail);
+				
+			})
+
+
+			response.json({ success: true, user: user });
+			}
+		});
+
+
+	},
 	requestLogin: async (request, response) => {
 		var username = request.body.username;
 		var password = request.body.password;

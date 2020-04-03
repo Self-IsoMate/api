@@ -55,6 +55,10 @@ router.route('/users/:user_id')
 	.put(userController.updateUser)
 ;
 
+router.route('/verify/')
+	.post(userController.sendVerification)
+;
+
 router.route('/verify/:email/:token')
     .put(userController.verifyUser)
 ;
