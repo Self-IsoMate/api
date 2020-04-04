@@ -61,7 +61,7 @@ router.route('/verify/')
 ;
 
 router.route('/verify/:email/:token')
-    .post(userController.verifyUser)
+    .get(userController.verifyUser)
 ;
 
 // Categories routes
