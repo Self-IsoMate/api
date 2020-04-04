@@ -56,13 +56,26 @@ router.route('/users/:user_id')
 	.put(userController.updateUser)
 ;
 
-router.route('/verify/')
+// Email Verification routes
+
+router.route('/verify')
 	.post(userController.sendVerification)
 ;
 
 router.route('/verify/:email/:token')
     .get(userController.verifyUser)
 ;
+
+// Password Reset routes
+router.route('/sendReset')
+	.post(userController.sendReset)
+;
+
+router.route('/resetpassword')
+	.post(userController.resetUser)
+;
+
+
 
 // Categories routes
 
