@@ -405,8 +405,8 @@ const UserController = {
 				console.log(err);
 			  }
 			  else {
-				  console.log(request.body.email+"/"+userToken.toString())
-				var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
+				  console.log("?email="+request.body.email+"&token="+userToken.toString())
+				var customHTML = html.replace(/TOKENREPLACEMENT/g, "?email="+request.body.email+"&token="+userToken.toString());//tokenreplacement will be exchanged with real token and email
 
 
 		let body = {
@@ -453,7 +453,7 @@ resetUser: async (request, response) => {
 	}
 				if(request.body.token == userEmailToken.token){ 
 
-					User.findOneAndUpdate({email:request.body.email}, {password:request.body.password}, (err, res) => { //reset password not verified:true
+					User.findOneAndUpdate({email:request.body.email}, {password:request.body.password}, (err, res) => {
 						if (err) {
 							response.send({success: false, message: err });
 						}
