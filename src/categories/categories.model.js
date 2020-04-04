@@ -8,8 +8,12 @@ const schema = new mongoose.Schema({
   image: {
     type: String
   },
-  parentCategoryId: {
-    type: String
+  subcategories: {
+    type: Array
+  },
+  isSubcategory: {
+    type: Boolean,
+    required: [true, 'isSubcategory flag is required']
   }
 });
 

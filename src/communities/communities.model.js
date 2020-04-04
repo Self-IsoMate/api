@@ -8,10 +8,6 @@ const communitySchema = new mongoose.Schema({
   image: {
     type: String
   },
-  categoryId: {
-    type: String,
-    required: [true, 'categoryId is required']
-  },
   dateCreated: {
     type: Date,
     required: [true, 'Created date is required']
