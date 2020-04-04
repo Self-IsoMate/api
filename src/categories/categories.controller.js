@@ -9,7 +9,7 @@ const categoriesController = {
 			var category = new Category({
 				name: request.body.name,
 				image: request.body.image,
-				parentCategoryId: request.body.parentCategoryId
+				isSubcategory: false
 			});
 
 		}
@@ -86,6 +86,66 @@ const categoriesController = {
 			if (res)
 				response.send(res);
 		});
+	},
+
+	addSubcategory: async (request, response) => {
+		
+		var parentCategory = await Category.findById(request.params.category_id)
+
+		var subcategory = await Category.findById(request.body.subcategoryId)
+
+		Promise.all([parentCategory, subcategory])
+			.then((res) => {
+				if (res) {
+					var [ parent, subcat ] = res;
+
+					subcat.isSubcategory = true;
+
+					Category.findByIdAndUpdate(subcat._id, subcat, (err) => {
+						if (err) response.send(err)
+					});
+
+					parent.subcategories.push(subcat);
+
+					Category.findByIdAndUpdate(parent._id, parent, (err, result) => {
+						if (err) response.json({ success: false, message: err });
+
+						else if (result) response.json({ success: true, category: parent });
+
+						else console.log("nothing");
+					});
+				}
+			})
+			.catch((err) => response.json({ success: false, message: err }));
+
+		// if there are already subcategories, then add to that list
+
+		// otherwise, create a new list and add the subcategory
+
+	},
+
+	removeSubcategory: async (request, response) => {
+		var parentCategory = await Category.findById(request.params.category_id)
+
+		var subcategory = await Category.findById(request.params.subcategory_id)
+
+		Promise.all([parentCategory, subcategory])
+			.then((res) => {
+				if (res) {
+					var [ parent, subcat ] = res;
+					parent.subcategories = parent.subcategories.filter((s) => {
+						s._id != subcat._id
+					});
+
+
+					Category.findByIdAndUpdate(parent._id, parent, (err, result) => {
+						if (err) response.json({ success: false, message: err });
+
+						if (result) response.json({ success: true, category: parent });
+					});
+				}
+			})
+			.catch((err) => response.json({ success: false, message: err }));
 	}
 };
 

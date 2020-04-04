@@ -16,8 +16,8 @@ const postsSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     required: [true, 'User is required']
   },
-  community: {
-    type: mongoose.Schema.Types.Mixed,
+  communities: {
+    type: Array,
     required: [true, 'Community is required']  
   },
   datePosted: {

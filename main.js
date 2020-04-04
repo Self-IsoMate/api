@@ -69,7 +69,11 @@ router.route('/categories/:category_id')
 	.delete(categoryController.deleteCategory)
 	.put(categoryController.updateCategory)
 	.get(categoryController.getCategory)
+	.post(categoryController.addSubcategory)
 ;
+
+router.route('/categories/:category_id/:subcategory_id')
+	.delete(categoryController.removeSubcategory);
 
 // community routes
 
