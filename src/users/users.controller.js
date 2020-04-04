@@ -327,14 +327,14 @@ const UserController = {
 			}
 			
 			
-		/*	transporter.sendMail(body, (errormail, resultmail)=>{
+			transporter.sendMail(body, (errormail, resultmail)=>{
 
 				if(errormail){
 					console.log(errormail);
 				}  
 				console.log(resultmail);
 				
-			})*/
+			})
 
 
 			response.json({ success: true, message: `email verification sent at (${request.body.email})` });
@@ -419,14 +419,14 @@ const UserController = {
 		}
 		
 		
-	/*	transporter.sendMail(body, (errormail, resultmail)=>{
+		transporter.sendMail(body, (errormail, resultmail)=>{
 
 			if(errormail){
 				console.log(errormail);
 			}  
 			console.log(resultmail);
 			
-		});*/
+		})
 
 
 		response.json({ success: true, message: `email reset sent to (${request.body.email})` });
