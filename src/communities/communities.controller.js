@@ -22,55 +22,16 @@ const CommunityController = {
 			var community = new Community({
 				name: request.body.name,
 				image: request.body.image,
-				category: category,
 				dateCreated: new Date()
 			});
+			
+			community.save((err, result) => {
+				if (err) response.json({ success: false, message: err });
 
+				if (result) response.json({ success: true, community: result });
+			})
 		}
 		catch (err) {
-			response.send(err);
-		}
-
-		var savedCommunity = await community.save((err) => {
-			if (err)
-				response.send(err);
-		});
-
-		try {
-
-			var categoryCommunity = await CategoryCommunity.findOne({ category: category }, (err) => {
-				if (err)
-					response.send(err);
-			})
-			
-			if (!categoryCommunity) {
-				categoryCommunity = new CategoryCommunity({
-					category: category,
-					communities: [community],
-					dateCreated: new Date()
-				});
-
-				categoryCommunity.save((err, res) => {
-					if (err)
-						response.send(err)
-
-					if (res)
-						response.send(res);
-				})
-
-			} else {
-
-				categoryCommunity.communities.push(community);
-
-				CategoryCommunity.findByIdAndUpdate(categoryCommunity._id, categoryCommunity, (err, res) => {
-					if (err)
-						response.send(err);
-					
-					if (res)
-						response.send(res);
-				});
-			}
-		} catch (err) {
 			response.send(err);
 		}
 	},
