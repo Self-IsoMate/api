@@ -459,26 +459,23 @@ resetUser: async (request, response) => {
 		return (false)
 	}
 				if(request.body.token == userEmailToken.token){ 
-					userEmail.setPassword(request.body.password);
-					Token.deleteOne({ email:request.body.email }, (err, res) => {
-						if (err) {
-							response.send({success: false, message: err });
-						}
-			
-						if (res) {
-							response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
-						}
-						
-					});
-					
+					userEmail.setPassword(request.body.password);				
 					User.findOneAndUpdate({email:request.body.email}, userEmail, (err, res) => {
 						if (err) {
 							response.send({success: false, message: err });
 						}
 			
 						if (res) {
-							userEmail = await User.findOne({ email: request.body.email });
-						
+							Token.deleteOne({ email:request.body.email }, (err, res) => {
+								if (err) {
+									response.send({success: false, message: err });
+								}
+					
+								if (res) {
+									response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
+								}
+								
+							});						
 						}
 					});
 
