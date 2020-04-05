@@ -357,129 +357,111 @@ const UserController = {
 		
 		if (!existingtoken) {
 			
-					//create token
-					try {
-						var token = new Token({
-							email: request.body.email,
-							token: userToken.toString()             
-						});
-			
-					}
-					catch (errToken) {
-						console.log(errToken);
-					}
-			
-					token.save((errToken) => {
-						if (errToken) {
-							response.send(errToken);
-						} else {
-							console.log(token);
-						}
-					});
-
-		}else{
-
+			//create token
 			try {
-				console.log(request.body.email);
-				console.log(userToken.toString());
-				const doc = await Token.findOneAndUpdate(
-					{ email: request.body.email},
-					{ token: userToken.toString() },
-					// If `new` isn't true, `findOneAndUpdate()` will return the
-					// document as it was _before_ it was updated.
-					{ new: true }
-				  );
-				  console.log(doc.token);
-
+				var token = new Token({
+					email: request.body.email,
+					token: userToken.toString()             
+				});
+	
 			}
 			catch (errToken) {
 				console.log(errToken);
 			}
+	
+			token.save((errToken) => {
+				if (errToken) {
+					response.send(errToken);
+				} else {
+					console.log(token);
+				}
+			});
 
+		} else {
+			try {
+				console.log(request.body.email);
+				console.log(userToken.toString());
+				// If `new` isn't true, `findOneAndUpdate()` will return the
+				// document as it was _before_ it was updated.
+				const doc = await Token.findOneAndUpdate({ email: request.body.email }, { token: userToken.toString() }, { new: true });
+				console.log(doc.token);
+			}
+			catch (errToken) {
+				console.log(errToken);
+			}
 		}
 
-	
-
-		fs.readFile("./src/email/resetpassword.html", {encoding: 'utf-8'}, function (err, html) {
+		fs.readFile("./src/email/resetpassword.html", {encoding: 'utf-8'}, (err, html) => {
 			if (err) {
 				console.log(err);
-			  }
-			  else {
-				  console.log("?email="+request.body.email+"&token="+userToken.toString())
+			} else {
+				console.log("?email="+request.body.email+"&token="+userToken.toString())
 				var customHTML = html.replace(/TOKENREPLACEMENT/g, "?email="+request.body.email+"&token="+userToken.toString());//tokenreplacement will be exchanged with real token and email
 
+				let body = {
+					from: process.env.EMAIL_USER,
+					to: request.body.email,
+					subject: "Self-Isomate - Reset Password",
+					html:customHTML
+				}
 
-		let body = {
+				transporter.sendMail(body, (errormail, resultmail) => {
+					if(errormail) {
+						console.log(errormail);
+					}  
+					console.log(resultmail);
+				});
 
-			from: process.env.EMAIL_USER,
-			to: request.body.email,
-			subject: "Self-Isomate - Reset Password",
-			html:customHTML
-		
-		}
-		
-		
-		transporter.sendMail(body, (errormail, resultmail)=>{
+				response.json({ success: true, message: `email reset sent to (${request.body.email})` });
+			}
+		});
+	},
 
-			if(errormail){
-				console.log(errormail);
-			}  
-			console.log(resultmail);
+
+
+	resetUser: async (request, response) => {
 			
-		})
+		var userEmailToken = await Token.findOne({ email: request.body.email });
+		if (!userEmailToken) {
+			response.json({ success: false, message: `token does not exist for user (${request.body.email})` });
+			return (false)
+		}
 
+		var userEmail = await User.findOne({ email: request.body.email });
+		if (!userEmail) {
+			response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
+			return (false)
+		}
 
-		response.json({ success: true, message: `email reset sent to (${request.body.email})` });
-	}
-	});
+		if(request.body.token == userEmailToken.token) { 
 
+			userEmail.setPassword( request.body.password );
 
-},
-
-
-
-resetUser: async (request, response) => {
-		
-	var userEmailToken = await Token.findOne({ email: request.body.email });
-	if (!userEmailToken) {
-		response.json({ success: false, message: `token does not exist for user (${request.body.email})` });
-		return (false)
-	}
-
-	var userEmail = await User.findOne({ email: request.body.email });
-	if (!userEmail) {
-		response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
-		return (false)
-	}
-				if(request.body.token == userEmailToken.token){ 
-
-					User.findOneAndUpdate({email:request.body.email}, {password:request.body.password}, (err, res) => {
+			User.findOneAndUpdate({email:request.body.email}, userEmail, (err, res) => {
+				if (err) {
+					response.send({success: false, message: err });
+				}
+	
+				if (res) {
+					Token.deleteOne({ email:request.body.email }, (err, res) => {
 						if (err) {
 							response.send({success: false, message: err });
 						}
 			
 						if (res) {
-							userEmailToken.setPassword(request.body.password);
-							Token.deleteOne({ email:request.body.email }, (err, res) => {
-								if (err) {
-									response.send({success: false, message: err });
-								}
-					
-								if (res) {
-									response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
-								}
-								
-							});
+							response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
 						}
+						
 					});
-
 				}
-				else{
-					response.json({ success: false, message: `invalid token (${request.body.token})` });
-					return (false)
-			}
-		
-},
+			});
+
+		}
+		else{
+			response.json({ success: false, message: `invalid token (${request.body.token})` });
+			return (false)
+		}		
+	},
 
 
 	requestLogin: async (request, response) => {
