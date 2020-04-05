@@ -438,41 +438,44 @@ const UserController = {
 
 
 resetUser: async (request, response) => {
-		
-	var userEmailToken = await Token.findOne({ email: request.body.email }).catch(
+	console.log(typeof request+" request "+request);	
+	console.log(typeof request.body +" body "+request.body);	
+	var objRequest = JSON.parse(request.body);
+
+	var userEmailToken = await Token.findOne({ email: objRequest.email }).catch(
 		(err) =>{
 		console.log(err);
 	}
 	);
 	if (!userEmailToken) {
-		response.json({ success: false, message: `token does not exist for user (${request.body.email})` });
+		response.json({ success: false, message: `token does not exist for user (${objRequest.email})` });
 		return (false)
 	}
 
-	var userEmail = await User.findOne({ email: request.body.email }).catch(
+	var userEmail = await User.findOne({ email: objRequest.email }).catch(
 		(err) =>{
 		console.log(err);
 	}
 	);
 	if (!userEmail) {
-		response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
+		response.json({ success: false, message: `user does not exist for email (${objRequest.email})` });
 		return (false)
 	}
-				if(request.body.token == userEmailToken.token){ 
-					userEmail.setPassword(request.body.password);				
-					User.findOneAndUpdate({email:request.body.email}, userEmail, (err, res) => {
+				if(objRequest.token == userEmailToken.token){ 
+					userEmail.setPassword(objRequest.password);				
+					User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
 						if (err) {
 							response.send({success: false, message: err });
 						}
 			
 						if (res) {
-							Token.deleteOne({ email:request.body.email }, (err, res) => {
+							Token.deleteOne({ email:objRequest.email }, (err, res) => {
 								if (err) {
 									response.send({success: false, message: err });
 								}
 					
 								if (res) {
-									response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
+									response.json({ success: true, message: `successfully password resetted for user (${objRequest.email})` });
 								}
 								
 							});						
@@ -481,7 +484,7 @@ resetUser: async (request, response) => {
 
 				}
 				else{
-					response.json({ success: false, message: `invalid token (${request.body.token})` });
+					response.json({ success: false, message: `invalid token (${objRequest.token})` });
 					return (false)
 			}
 		
