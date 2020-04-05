@@ -459,7 +459,8 @@ resetUser: async (request, response) => {
 						}
 			
 						if (res) {
-							userEmailToken.setPassword(request.body.password);
+							userEmail = await User.findOne({ email: request.body.email });
+							userEmail.setPassword(request.body.password);
 							Token.deleteOne({ email:request.body.email }, (err, res) => {
 								if (err) {
 									response.send({success: false, message: err });
