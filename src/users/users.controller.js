@@ -41,7 +41,6 @@ const UserController = {
 
 			var user = new User({
 				username: request.body.username,
-				password: request.body.password,
 				isMentor: request.body.isMentor,
 				mentorSubjects: request.body.mentorSubjects,
 				email: request.body.email,
@@ -460,25 +459,26 @@ resetUser: async (request, response) => {
 		return (false)
 	}
 				if(request.body.token == userEmailToken.token){ 
-
-					User.findOneAndUpdate({email:request.body.email}, {password:request.body.password}, (err, res) => {
+					userEmail.setPassword(request.body.password);
+					Token.deleteOne({ email:request.body.email }, (err, res) => {
+						if (err) {
+							response.send({success: false, message: err });
+						}
+			
+						if (res) {
+							response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
+						}
+						
+					});
+					
+					User.findOneAndUpdate({email:request.body.email}, userEmail, (err, res) => {
 						if (err) {
 							response.send({success: false, message: err });
 						}
 			
 						if (res) {
 							userEmail = await User.findOne({ email: request.body.email });
-							userEmail.setPassword(request.body.password);
-							Token.deleteOne({ email:request.body.email }, (err, res) => {
-								if (err) {
-									response.send({success: false, message: err });
-								}
-					
-								if (res) {
-									response.json({ success: true, message: `successfully password resetted for user (${request.params.email})` });
-								}
-								
-							});
+						
 						}
 					});
 
