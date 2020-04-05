@@ -438,7 +438,9 @@ const UserController = {
 
 
 resetUser: async (request, response) => {
-		
+	console.log("request"+request);	
+	console.log("body"+request.body);	
+
 	var userEmailToken = await Token.findOne({ email: request.body.email }).catch(
 		(err) =>{
 		console.log(err);
