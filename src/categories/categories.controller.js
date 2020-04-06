@@ -1,5 +1,9 @@
 var mongoose   = require('mongoose');
+
 var categorySchema = require('./categories.model');
+var communitySchema = require('../communities/communities.model');
+
+const Community = mongoose.model('community', communitySchema, 'communities');
 const Category = mongoose.model('category', categorySchema, 'categories');
 
 const categoriesController = {
@@ -22,29 +26,42 @@ const categoriesController = {
 				name: request.body.name,
 				image: request.body.image,
 				isChild: parent ? true : false,
-				isLeaf: true
+				isLeaf: true,
+				communities: request.body.communities,
 			});
+
+			if (parent) {
+				category.parentId = parent._id;
+			}
 
 		}
 		catch (err) {
 			console.log(err);
 		}
 
-		category.save((err) => {
+		category.save((err, res) => {
 			if (err) {
 				response.json({ success: false, message: err});
 			} else {
 				// update parent here
 
-				Category.findByIdAndUpdate(parent._id, parent, (parentErr, res) => {
-					if (parentErr) { 
-						response.json({success: false, message: parentErr});
-					}
+				if (res && parent) {
+					parent.children.push(res._id)
+					Category.findByIdAndUpdate(parent._id, parent, (parentErr, parentRes) => {
+						if (parentErr) { 
+							response.json({success: false, message: parentErr});
+						}
 
+						if (parentRes) {
+							console.log(parent);
+							response.json({ success: true, category: category });
+						}
+					});
+				} else {
 					if (res) {
-						response.json({ success: true, category: category });
+						response.json({ success: true, category: res });
 					}
-				});
+				}
 
 			}
 		});
@@ -191,6 +208,56 @@ const categoriesController = {
 				response.json({success: false, message: err});
 			})
 
+	},
+
+	addCommunitiesToCategory: async (request, response) => {
+		// category id in params
+		// community ids in body
+
+		var communities = request.body.communities;
+
+		// checking the community ids exist
+
+		var communityCount = await Community.find({ '_id': { $in: communities } }, (err) => {
+			if (err) {
+				console.log("error in getting the communities");
+				response.json({ success: false, message: err });
+			}
+		});
+
+		if (communityCount.length != communities.length) {
+			console.log("error in the number of communities");
+			response.json({ success: false, message: "Number of communities found does not match entered" });
+			return;
+		}
+
+		var category = await Category.findById(request.params.category_id, (err) => {
+			if (err) {
+				console.log("error in getting the category")
+				response.json({ success: false, message: err });
+			}
+		});
+
+		if (!category) {
+			console.log("error here in the one before the last catch");
+			response.json({ success: false, message: "No category found" });
+			return;
+		}
+
+		category.communities.push(communities);
+
+		Category.findByIdAndUpdate(category._id, category, (err, res) => {
+			if (err) {
+				console.log("error here in the last catch");
+				response.json({ success: false, message: err });
+				return;
+			}
+
+			if (res) {
+				response.json({ success: true, category: category });
+				return;
+			}
+		});
 	}
 };
 

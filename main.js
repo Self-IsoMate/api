@@ -93,6 +93,10 @@ router.route('/categories/:category_id')
 	.post(categoryController.addSubcategory)
 ;
 
+router.route('/categories/:category_id/communities')
+	.post(categoryController.addCommunitiesToCategory)
+;
+
 // community routes
 
 router.route('/communities')
