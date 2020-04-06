@@ -17,6 +17,7 @@ var categoryController = require('./src/categories/categories.controller');
 var communityController = require('./src/communities/communities.controller');
 var challengesController = require('./src/challenges/challenges.controller');
 var postsController = require('./src/posts/posts.controller')
+var messagesController = require('./src/messages/messages.controller')
 
 // SCHEMAS
 
@@ -108,6 +109,7 @@ router.route('/communities/:community_id')
 	.delete(communityController.deleteCommunity)
 	.put(communityController.updateCommunity)
 ;
+
 // challenges routes
 router.route('/challenges')
 	.post(challengesController.addChallenge)
@@ -119,6 +121,19 @@ router.route('/challenges/:challenge_id')
 	.put(challengesController.updateChallenge)
 	.get(challengesController.getChallenge)
 ;
+
+// messages routes
+router.route('/messages')
+	.post(messagesController.addMessage)
+	.get(messagesController.searchMessage)
+;
+
+router.route('/messages/:message_id')
+	.delete(messagesController.deleteMessage)
+	.put(messagesController.updateMessage)
+	.get(messagesController.getMessage)
+;
+ 
 // posts routes
 router.route('/posts')
 	.post(postsController.addPost)
