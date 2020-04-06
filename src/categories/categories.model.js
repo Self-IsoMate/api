@@ -1,20 +1,30 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Name is required']
-  },
-  image: {
-    type: String
-  },
-  subcategories: {
-    type: Array
-  },
-  isSubcategory: {
-    type: Boolean,
-    required: [true, 'isSubcategory flag is required']
-  }
+	name: {
+		type: String,
+		required: [true, 'Name is required']
+	},
+	image: {
+		type: String
+	},
+	children: {
+		type: Array
+	},
+	parentId: {
+		type: String
+	},
+	communities: {
+		type: Array
+	},
+	isChild: {
+		type: Boolean,
+		required: [ true, 'isChild flag is required' ]
+	},
+	isLeaf: {
+		type: Boolean,
+		required: [ true, 'isLeaf is required' ]
+	}
 });
 
 module.exports = schema;

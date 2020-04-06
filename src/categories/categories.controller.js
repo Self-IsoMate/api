@@ -5,11 +5,24 @@ const Category = mongoose.model('category', categorySchema, 'categories');
 const categoriesController = {
 	addCategory: async (request, response) => {
 
+		var parent;
+
+		if (request.body.parentId) {
+			parent = await Category.findById(request.body.parentId, (err) => {
+				if (err) {
+					response.json({ success: false, message: err });
+				}
+			});
+
+			parent.isLeaf = false;
+		}
+
 		try {
 			var category = new Category({
 				name: request.body.name,
 				image: request.body.image,
-				isSubcategory: false
+				isChild: parent ? true : false,
+				isLeaf: true
 			});
 
 		}
@@ -19,22 +32,72 @@ const categoriesController = {
 
 		category.save((err) => {
 			if (err) {
-				response.send(err);
+				response.json({ success: false, message: err});
 			} else {
-				response.json({ success: true, category: category });
+				// update parent here
+
+				Category.findByIdAndUpdate(parent._id, parent, (parentErr, res) => {
+					if (parentErr) { 
+						response.json({success: false, message: parentErr});
+					}
+
+					if (res) {
+						response.json({ success: true, category: category });
+					}
+				});
+
 			}
 		});
 	},
 
 	deleteCategory: async (request, response) => {
 
+		// find category
+		// if it has children, throw an error
+		// if it has a parent, delete it from its children
+		// if the above is successful, then delete the category
+
+		var parent;
+
+		var category = await Category.findById( request.params.category_id, (err) => {
+			response.json({ success: false, message: err });
+		})
+
+		if (category.children.length > 0) {
+			response.json({ success: false, message: "Category contains children - please delete these first" });
+			return;
+		}
+
+		if (category.parent) {
+			parent = Category.findById(category.parent, (err) => {
+				response.json({ success: false, message: err })
+			})
+
+			parent.children = parent.children.filter((c) => c != category._id);
+		}
+		
 		Category.findByIdAndDelete( request.params.category_id , (err, res) => {
 			if (err) {
 				response.send(err);
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully deleted category (${res._id})` });
+				if (parent) {
+					Category.findByIdAndUpdate(parent._id, parent, (parentErr, parentRes) => {
+						if (parentErr) {
+							response.json({ success: false, message: parentErr });
+							return;
+						}
+
+						if (parentRes) {
+							response.json({ success: true, message: `successfully deleted category (${res._id})` });
+							return;
+						}
+					});
+				} else {
+					response.json({ success: true, message: `successfully deleted category (${res._id})` });
+				}
+
 			}
 			
 		});
@@ -90,62 +153,44 @@ const categoriesController = {
 
 	addSubcategory: async (request, response) => {
 		
-		var parentCategory = await Category.findById(request.params.category_id)
+		// use id to get category
+		// use parent id to get parent
 
-		var subcategory = await Category.findById(request.body.subcategoryId)
+		// add category id to children id in parent
+		// add parent id as parent id in category
 
-		Promise.all([parentCategory, subcategory])
-			.then((res) => {
-				if (res) {
-					var [ parent, subcat ] = res;
+		var child = await Category.findById(request.body.child, (err) => {
+			if (err) {
+				response.json({success: false, message: err});
+			}
+		})
 
-					subcat.isSubcategory = true;
+		var parent = await Category.findById(request.body.parent, (err) => {
+			if (err) {
+				response.json({success: false, message: err});
+			}
+		})
 
-					Category.findByIdAndUpdate(subcat._id, subcat, (err) => {
-						if (err) response.send(err)
-					});
+		child.parent = parent._id;
+		parent.children.push(child._id);
 
-					parent.subcategories.push(subcat);
+		// creating an array of promises to be used by Promise.all
+		var promises = [ child, parent ].map((item) => {
+			return Category.findByIdAndUpdate(item._id, item);
+		})
 
-					Category.findByIdAndUpdate(parent._id, parent, (err, result) => {
-						if (err) response.json({ success: false, message: err });
+		Promise.all(promises)
+			.then((documents) => {
+				var [ childRes, parentRes ] = documents;
 
-						else if (result) response.json({ success: true, category: parent });
-
-						else console.log("nothing");
-					});
+				if (childRes && parentRes) {
+					response.json({ success: true, parent: parent, child: child });
 				}
 			})
-			.catch((err) => response.json({ success: false, message: err }));
-
-		// if there are already subcategories, then add to that list
-
-		// otherwise, create a new list and add the subcategory
-
-	},
-
-	removeSubcategory: async (request, response) => {
-		var parentCategory = await Category.findById(request.params.category_id)
-
-		var subcategory = await Category.findById(request.params.subcategory_id)
-
-		Promise.all([parentCategory, subcategory])
-			.then((res) => {
-				if (res) {
-					var [ parent, subcat ] = res;
-					parent.subcategories = parent.subcategories.filter((s) => {
-						s._id != subcat._id
-					});
-
-
-					Category.findByIdAndUpdate(parent._id, parent, (err, result) => {
-						if (err) response.json({ success: false, message: err });
-
-						if (result) response.json({ success: true, category: parent });
-					});
-				}
+			.catch((err) => {
+				response.json({success: false, message: err});
 			})
-			.catch((err) => response.json({ success: false, message: err }));
+
 	}
 };
 
