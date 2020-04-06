@@ -8,13 +8,15 @@ const Community = mongoose.model('community', communitySchema, 'communities'); /
 
 
 const postsController = {
-//    var array = [];
 
         addPost: async (request, response) => {
 
-            var user = User.findById(request.body.user)
+            var user = await User.findById(request.body.userId)
 
-            var community = Community.findById(request.body.community)
+            if (!user) {
+                response.json({ success: false, message: "User doesn't exist" });
+                return;
+            }
 
             Promise.all([user, community]).then((success, failed) => {
                 if (success) {
@@ -25,8 +27,8 @@ const postsController = {
                         media: request.body.media,
                         title: request.body.title,
                         body: request.body.body,
-                        user: user,
-                        community: community ,
+                        userId: user._id,
+                        communities: request.body.communities,
                         datePosted: Date.now()
                     });
             
@@ -49,59 +51,54 @@ const postsController = {
 
         deletePost: async (request, response) => {
 
-                Post.findByIdAndDelete( request.params.post_id , (err, res) => {
-                    console.log(err)
-                    if (err) {
-                        response.send(err);
-                    }
+            Post.findByIdAndDelete( request.params.post_id , (err, res) => {
+                console.log(err)
+                if (err) {
+                    response.send(err);
+                }
 
-                    if (res) {
-                        response.json({ success: true, message: `successfully deleted post (${res._id})` });
-                    }
-                    
-                });
-            },
+                if (res) {
+                    response.json({ success: true, message: `successfully deleted post (${res._id})` });
+                }
+                
+            });
+        },
+
          updatePost: async (request, response) => {
-                Post.findByIdAndUpdate(request.params.post_id, request.body, (err, res) => {
-                    if (err) {
-                        response.send(err);
-                    }
+            request.body.dateEdited = new Date();
 
-                    if (res) {
-                        Post.findByIdAndUpdate(request.params.post_id, {dateEdited : Date.now()}, (err, res) => {//it adds at what time it has been modified
-                            if (err) {
-                                response.send(err);
-                            }
-        
-                            if (res) {
-                                response.json({ success: true, message: `successfully updated post (${res._id})` });
-                            }
-                        });                    }
-                });
-
-            },
-        searchPosts: async (request, response) => {//can use User Id to search posts from userid same for community use api/posts/ and JSON{"_id": ""}
-                var parameters = request.query;
-        
-                Post.find(parameters,(err, result) => {
-                    if (err)
-                        response.send(err);
-                    
-                    if (result)
-                        response.send(result);
-                })
-            },
-        getPost: async (request, response) => {
-                Post.findById(request.params.post_id, (err, res) => {
-                    if (err)
-                        response.send(err);
-                    
-                    if (res)
-                        response.send(res);
-                });
-            }
+            Post.findByIdAndUpdate(request.params.post_id, request.body, (err, res) => {
+                if (err) {
+                    response.send(err);
+                }
     
+                if (res) {
+                    response.json({ success: true, message: `successfully updated post (${res._id})` });
+                }
+            });
+        },
 
+        searchPosts: async (request, response) => {//can use User Id to search posts from userid same for community use api/posts/ and JSON{"_id": ""}
+            var parameters = request.query;
+    
+            Post.find(parameters,(err, result) => {
+                if (err)
+                    response.send(err);
+                
+                if (result)
+                    response.send(result);
+            })
+        },
+
+        getPost: async (request, response) => {
+            Post.findById(request.params.post_id, (err, res) => {
+                if (err)
+                    response.send(err);
+                
+                if (res)
+                    response.send(res);
+            });
+        }
 };
 
 module.exports = postsController;

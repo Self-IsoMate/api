@@ -12,12 +12,12 @@ const postsSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Body is required']
   },
-  user: {
-    type: mongoose.Schema.Types.Mixed,
+  userId: {
+    type: String, // changed to refer to user id in case user details change
     required: [true, 'User is required']
   },
   communities: {
-    type: Array,
+    type: Array, // this should be an array of community ids
     required: [true, 'Community is required']  
   },
   datePosted: {
