@@ -16,8 +16,6 @@ const messagesController = {
 		}
 		catch (err) {
 			console.log(err);
-			response.json({ success: true, message: message });
-
 		}
 
 		message.save((err) => {

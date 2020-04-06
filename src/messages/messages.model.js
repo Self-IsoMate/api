@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const schema = new mongoose.Schema({
+const messagesSchema = new mongoose.Schema({
 
   userID:{
     type: String,
@@ -20,4 +20,4 @@ const schema = new mongoose.Schema({
   }
 });
 
-module.exports = schema;
+module.exports = messagesSchema;
