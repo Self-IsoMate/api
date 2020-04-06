@@ -95,8 +95,9 @@ router.route('/categories/:category_id')
 	.post(categoryController.addSubcategory)
 ;
 
-router.route('/categories/:category_id/:subcategory_id')
-	.delete(categoryController.removeSubcategory);
+router.route('/categories/:category_id/communities')
+	.post(categoryController.addCommunitiesToCategory)
+;
 
 // community routes
 

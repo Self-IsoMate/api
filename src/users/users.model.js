@@ -6,12 +6,6 @@ var User = new mongoose.Schema({
     type: String,
     required: [true, 'Username is required']
   },
-  isMentor: {
-    type: Boolean
-  },
-  mentorSubjects: {
-    type: Array
-  },
   email: {
     type: String,
     required: [true, 'Email is required']
@@ -19,10 +13,6 @@ var User = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     required: [true, 'isVerified is required'] //made default "no"
-
-  },
-  interests: {
-    type: Array
   },
   profilePicture: {
     type: String

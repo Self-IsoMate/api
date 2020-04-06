@@ -41,14 +41,10 @@ const UserController = {
 
 			var user = new User({
 				username: request.body.username,
-				isMentor: request.body.isMentor,
-				mentorSubjects: request.body.mentorSubjects,
 				email: request.body.email,
 				isVerified:false,
-				interests: request.body.interests,
 				profilePicture: request.body.profilePicture,
 				dateCreated: new Date(),
-				// Setting to default profile picture
 				profilePicture: 'https://storage.cloud.google.com/self-isomate-images/profile-pictures/default-profile-pic.png'
 			});
 
@@ -178,10 +174,14 @@ const UserController = {
 					throw err;
 			})
 
+			if (!community) {
+				throw "Community not found";
+			}
+
 			if (user.communities) {
-				user.communities.push(community);
+				user.communities.push(community._id);
 			} else {
-				user.communities = [community];
+				user.communities = [community._id];
 			}
 
 			User.updateOne({ _id: userId }, user, (err, res) => {
@@ -207,17 +207,17 @@ const UserController = {
 					throw err;
 			});
 
-			user.communities = user.communities.filter(c => c._id != communityId);
-
-			console.log(user.communities);
+			user.communities = user.communities.filter(c => c != communityId);
 
 			User.findByIdAndUpdate(userId, user, (err, res) => {
-				if (err)
-					throw err;
+				if (err) {
+					response.json({ success: false, message: err });
+				}
 
-				if (res)
+				if (res) {
 					response.json({ success: true, user: res });
-			})
+				}
+			});
 
 		} catch (err) {
 			response.send({success: false, message: err });
@@ -225,12 +225,21 @@ const UserController = {
 	},
 
 	getCommunitiesFromUser: async (request, response) => {
-		User.findById(request.params.user_id, "communities", (err, res) => {
-			if (err)
-				response.send({success: false, message: err });
+		// request.params.user_id
+		var communityIds = await User.findById(request.params.user_id, "communities", (err) => {
+			if (err) {
+				response.json({success: false, message: err });
+			}
+		});
 
-			if (res)
-				response.json({ success: true, communities: user });
+		Community.find({ '_id': { $in: communityIds } }, (err, res) => {
+			if (err) {
+				response.json({ success: false, message: err });
+			}
+
+			if (res) {
+				response.json({ success: true, communities: res });
+			}
 		});
 	},
 
