@@ -244,7 +244,7 @@ const categoriesController = {
 			return;
 		}
 
-		category.communities.push(communities);
+		category.communities.concat(communities);
 
 		Category.findByIdAndUpdate(category._id, category, (err, res) => {
 			if (err) {
