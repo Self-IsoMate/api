@@ -58,9 +58,11 @@ const resourcesController = {
 							response.json({ success: true, resource: res });
 						}
 					})
-				}
+				} else {
 
-				response.json({ success: true, resource: res });
+					response.json({ success: true, resource: res });
+
+				}
 			}
 		});
 	},
