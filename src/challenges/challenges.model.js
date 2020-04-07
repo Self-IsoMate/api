@@ -13,11 +13,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: [true, 'Description is required']  
   },
-  community: {
-    type: mongoose.Schema.Types.Mixed,
-    required: [true, 'Community is required']  
+  deadline: {
+    type: Date,
+    required: [true, 'Deadline is required']  
   }
-
 });
 
 module.exports = schema;

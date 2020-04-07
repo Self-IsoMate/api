@@ -1,7 +1,5 @@
 var mongoose   = require('mongoose');
 var challengeSchema = require('./challenges.model');
-var communitySchema = require('../communities/communities.model');
-const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
 const Challenge = mongoose.model('challenge', challengeSchema, 'challenges');
 
 const challengesController = {
@@ -11,8 +9,8 @@ const challengesController = {
 			var challenge = new Challenge({
 				title: request.body.title,
 				image: request.body.image,
-                description: request.body.description,
-                community: await Community.findById(request.body.community)
+				description: request.body.description,
+				deadline: request.body.deadline
 			});
 
 		}
