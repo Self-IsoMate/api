@@ -19,6 +19,7 @@ var challengesController = require('./src/challenges/challenges.controller');
 var postsController = require('./src/posts/posts.controller')
 var messagesController = require('./src/messages/messages.controller')
 var chatroomsController = require('./src/chatrooms/chatrooms.controller')
+var resourceController = require('./src/resource objects/resource.controller');
 
 // SCHEMAS
 
@@ -174,6 +175,11 @@ router.route('/users/:user_id/communities')
 
 router.route('/login')
 	.post(userController.requestLogin)
+;
+
+router.route('/resources')
+	.get(resourceController.getResources)
+	.post(resourceController.addResource)
 ;
 
 // REGISTER OUR ROUTES -------------------------------

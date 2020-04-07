@@ -24,6 +24,9 @@ const schema = new mongoose.Schema({
 	isLeaf: {
 		type: Boolean,
 		required: [ true, 'isLeaf is required' ]
+	},
+	resources: {
+		type: Array
 	}
 });
 
