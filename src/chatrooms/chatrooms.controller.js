@@ -9,7 +9,7 @@ const chatroomsController = {
             var communities = [];
 			var chatrooms = new Chatroom({
 				chatroomName: request.body.chatroomName,
-                chatroomPicture: request.body.chatroomID,
+                chatroomPicture: request.body.chatroomPicture,
                 communities : communities
 			});
 
