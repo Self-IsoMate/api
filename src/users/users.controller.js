@@ -267,7 +267,6 @@ const UserController = {
 		}
 	},
 
-	/*
 	removeChatroom: async (request, response) => {
 		try {
 			var userId = request.params.user_id;
@@ -293,7 +292,6 @@ const UserController = {
 			response.send({success: false, message: err });
 		}
 	},
-*/
 
 	getCommunitiesFromUser: async (request, response) => {
 		// request.params.user_id
@@ -313,6 +311,17 @@ const UserController = {
 			}
 		});
 	},
+
+	getChatroomsFromUser: async (request, response) => {
+		User.findById(request.params.user_id, "chatrooms", (err, res) => {
+			if (err)
+				response.send({success: false, message: err });
+
+			if (res)
+				response.json({ success: true, chatrooms: res });
+		});
+	},
+
 
 	verifyUser: async (request, response) => {
 		

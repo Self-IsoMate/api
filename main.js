@@ -176,6 +176,18 @@ router.route('/users/:user_id/communities')
 	.get(userController.getCommunitiesFromUser)
 ;
 
+// chatroom to user
+router.route('/usersChat')
+	.post(userController.addChatroom)
+;
+
+router.route('/usersChat/:user_id')
+	.get(userController.getChatroomsFromUser)
+;
+
+router.route('/users/:user_id/chatrooms/:chatroom_id') 
+	.delete(userController.removeChatroom)
+
 router.route('/users/:user_id/communities/:community_id')
 	.delete(userController.removeCommunity)
 ;
