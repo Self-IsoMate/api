@@ -200,7 +200,7 @@ const UserController = {
 	removeCommunity: async (request, response) => {
 		try {
 			var userId = request.params.user_id;
-			var communityId = request.body.communityId;
+			var communityId = request.params.community_id;
 
 			var user = await User.findById(userId, (err) => {
 				if (err) {
