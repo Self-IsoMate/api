@@ -51,6 +51,18 @@ const chatroomsController = {
 		});
     },
 
+    updateChatroom: async (request, response) => {
+        Chatroom.findByIdAndUpdate(request.params.chatroom_id, request.body, (err, res) => {
+            if (err) {
+                response.send(err);
+            }
+
+            if (res) {
+                response.json({ success: true, message: `successfully updated chatroom (${res._id})` });
+            }
+        });
+    },
+
     addCommunityChatroom: async (request, response) => {
         var communities = [];
 

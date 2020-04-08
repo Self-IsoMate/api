@@ -7,10 +7,6 @@ const communitySchema = new mongoose.Schema({
   },
   image: {
     type: String
-  },
-  dateCreated: {
-    type: Date,
-    required: [true, 'Created date is required']
   }
 });
 

@@ -134,8 +134,12 @@ router.route('/chatrooms')
 
 router.route('/chatrooms/:chatroom_id')
 	.delete(chatroomsController.deleteChatrooms)
-	.put(chatroomsController.addCommunityChatroom)
+	.put(chatroomsController.updateChatroom)
 	.get(chatroomsController.getChatroom)
+;
+
+router.route('/chatroomsCommunity/:chatroom_id')
+	.put(chatroomsController.addCommunityChatroom)
 ;
 
 
