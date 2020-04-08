@@ -214,6 +214,7 @@ const UserController = {
 					throw err;
 			})
 
+			
 			if (!chatroom) {
 				throw "Chatroom not found";
 			}
@@ -318,7 +319,7 @@ const UserController = {
 				response.send({success: false, message: err });
 
 			if (res)
-				response.json({ success: true, chatrooms: res.chatroom });
+				response.json({ success: true, chatrooms: res.chatrooms });
 		});
 	},
 
