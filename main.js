@@ -132,8 +132,12 @@ router.route('/chatrooms')
 
 router.route('/chatrooms/:chatroom_id')
 	.delete(chatroomsController.deleteChatrooms)
-	.put(chatroomsController.addCommunityChatroom)
+	.put(chatroomsController.updateChatroom)
 	.get(chatroomsController.getChatroom)
+;
+
+router.route('/chatroomsCommunity/:chatroom_id')
+	.put(chatroomsController.addCommunityChatroom)
 ;
 
 
@@ -167,6 +171,19 @@ router.route('/categories/:category_name/communities')
 
 router.route('/users/:user_id/communities')
 	.post(userController.addCommunity)
+	.get(userController.getCommunitiesFromUser)
+;
+
+// chatroom to user
+router.route('/usersChat')
+	.post(userController.addChatroom)
+	//.get(userController.getCommunitiesFromUser)
+;
+
+router.route('/users/:user_id/chatrooms/:chatroom_id')
+	.delete(userController.removeCommunity)
+
+router.route('/users/:user_id/communities/:community_id')
 	.delete(userController.removeCommunity)
 	.get(userController.getCommunitiesFromUser)
 ;

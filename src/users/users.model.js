@@ -34,6 +34,9 @@ var User = new mongoose.Schema({
   communities: {
     type: Array
   },
+  chatrooms: {
+    type: Array
+  },
   hash: {
     type: String,
     required: [true, 'Hash required']

@@ -19,9 +19,8 @@ const CommunityController = {
 		try {
 			var community = new Community({
 				name: request.body.name,
-				image: request.body.image,
-				dateCreated: new Date()
-			});
+				image: request.body.image
+						});
 			
 			community.save((err, result) => {
 				if (err) response.json({ success: false, message: err });
