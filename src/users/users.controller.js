@@ -307,7 +307,7 @@ const UserController = {
 			}
 
 			if (res) {
-				response.json({ success: true, communities: res.data });
+				response.json({ success: true, communities: res });
 			}
 		});
 	},
@@ -318,7 +318,7 @@ const UserController = {
 				response.send({success: false, message: err });
 
 			if (res)
-				response.json({ success: true, chatrooms: res.data });
+				response.json({ success: true, chatrooms: res.chatroom });
 		});
 	},
 
