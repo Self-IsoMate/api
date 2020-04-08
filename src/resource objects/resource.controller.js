@@ -15,6 +15,7 @@ const resourcesController = {
 			- body (required)
 			- image (optional)
 			- category id (optional)
+			- links (array of links)
 
 		*/
 
@@ -36,7 +37,8 @@ const resourcesController = {
 			title: request.body.title,
 			body: request.body.body,
 			image: request.body.image,
-			categoryId: request.body.categoryId
+			categoryId: request.body.categoryId,
+			links: request.body.links
 		});
 
 		resource.save((err, res) => {
@@ -82,6 +84,36 @@ const resourcesController = {
 				response.json({ success: true, resources: res });
 			}
 		})
+	},
+
+	addHyperlinkToResource: async (request, response) => {
+		/**
+		 * get the resource id from request.params.resource_id
+		 * get the link from the body (request.body.hyperlink)
+		 */
+
+		var resource = await Resource.findById(request.params.resource_id, (err) => {
+			if (err) {
+				response.json({ success: false, message: err});
+			}
+		});
+
+		if (!resource) {
+			response.json({ success: false, message: "Problem getting the resource" });
+			return;
+		}
+
+		resource.links.push(request.body.hyperlink);
+
+		Resource.findByIdAndUpdate(resource._id, resource, (err, res) => {
+			if (err) {
+				response.json({ success: false, message: err });
+			}
+
+			if (res) {
+				response.json({ success: true, resource: resource});
+			}
+		});
 	}
 
 	// add multiple existing resources to category

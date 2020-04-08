@@ -1,18 +1,42 @@
 var mongoose   = require('mongoose');
 var chatroomsSchema = require('./chatrooms.model');
+var communitySchema = require('../communities/communities.model');
 const Chatroom = mongoose.model('chatroom', chatroomsSchema, 'chatrooms');
+const Community = mongoose.model('community', communitySchema, 'communities');
 
 const chatroomsController = {
     addChatrooms: async (request, response) => {
 
 		try {
-            var communities = [];
-			var chatrooms = new Chatroom({
-				chatroomName: request.body.chatroomName,
-                chatroomPicture: request.body.chatroomPicture,
-                communities : communities
-			});
-
+            var existingChatrooms = await Chatroom.find({chatroomName: request.body.chatroomName}, (err) => {
+                if (err){
+                    console.log(err)
+                }
+            })
+            var existingCommunities = await Community.find({ '_id': { $in: request.body.communities }}, (err) => {
+                if (err){
+                    console.log(err)
+                }
+            })
+            if (existingChatrooms.length == 0 && (existingCommunities.length == request.body.communities.length)){
+                var chatrooms = new Chatroom({
+                    chatroomName: request.body.chatroomName,
+                    chatroomPicture: request.body.chatroomPicture,
+                    communities : request.body.communities
+                });
+            } else {
+                var errorMessage = "";
+                if (existingChatrooms.length > 0 && (existingCommunities.length < request.body.communities.length > 0)){
+                    errorMessage = "Duplicate Chatroom and Communities List Invalid"
+                } else if (existingChatrooms.length > 0){
+                    errorMessage = "Duplicate Chatroom"
+                } else {
+                    errorMessage = "Communities List Invalid"
+                }
+                console.log(errorMessage);
+                response.json({success: false, error: errorMessage});
+                return;
+            }
 		}
 		catch (err) {
 			console.log(err);
@@ -25,6 +49,18 @@ const chatroomsController = {
 				response.json({ success: true, chatrooms: chatrooms });
 			}
 		});
+    },
+
+    updateChatroom: async (request, response) => {
+        Chatroom.findByIdAndUpdate(request.params.chatroom_id, request.body, (err, res) => {
+            if (err) {
+                response.send(err);
+            }
+
+            if (res) {
+                response.json({ success: true, message: `successfully updated chatroom (${res._id})` });
+            }
+        });
     },
 
     addCommunityChatroom: async (request, response) => {
@@ -47,7 +83,7 @@ const chatroomsController = {
             }
 
             if (res) {
-                response.json({ success: true, message: `successfully community (${request.body.community_id}) added for chatroom (${request.params.chatroom_id})` });					
+                response.json({ success: true, message: `successfully updated chatroom (${request.body.community_id}) added for chatroom (${request.params.chatroom_id})` });					
             }
         });
 
@@ -61,7 +97,7 @@ const chatroomsController = {
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully chatroom deleted (${res._id})` });
+				response.json({ success: true, message: `chatroom deleted successfully (${res._id})` });
 			}
 			
 		});

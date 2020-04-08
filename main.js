@@ -24,7 +24,7 @@ var resourceController = require('./src/resource objects/resource.controller');
 // SCHEMAS
 
 
-const CONNECTION_STRING = 'mongodb+srv://sophie:applesAndOranges@self-isomatedb-8bnuw.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
 // FUNCTIONS FOR API
 
@@ -134,8 +134,12 @@ router.route('/chatrooms')
 
 router.route('/chatrooms/:chatroom_id')
 	.delete(chatroomsController.deleteChatrooms)
-	.put(chatroomsController.addCommunityChatroom)
+	.put(chatroomsController.updateChatroom)
 	.get(chatroomsController.getChatroom)
+;
+
+router.route('/chatroomsCommunity/:chatroom_id')
+	.put(chatroomsController.addCommunityChatroom)
 ;
 
 
@@ -169,8 +173,23 @@ router.route('/categories/:category_name/communities')
 
 router.route('/users/:user_id/communities')
 	.post(userController.addCommunity)
-	.delete(userController.removeCommunity)
 	.get(userController.getCommunitiesFromUser)
+;
+
+// chatroom to user
+router.route('/usersChat')
+	.post(userController.addChatroom)
+;
+
+router.route('/usersChat/:user_id')
+	.get(userController.getChatroomsFromUser)
+;
+
+router.route('/users/:user_id/chatrooms/:chatroom_id') 
+	.delete(userController.removeChatroom)
+
+router.route('/users/:user_id/communities/:community_id')
+	.delete(userController.removeCommunity)
 ;
 
 router.route('/login')
@@ -180,6 +199,10 @@ router.route('/login')
 router.route('/resources')
 	.get(resourceController.getResources)
 	.post(resourceController.addResource)
+;
+
+router.route('/resources/:resource_id')
+	.post(resourceController.addHyperlinkToResource)
 ;
 
 // REGISTER OUR ROUTES -------------------------------

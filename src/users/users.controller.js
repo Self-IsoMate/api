@@ -5,6 +5,8 @@ var cors = require('cors');
 var userSchema = require('./users.model');
 var tokensSchema = require('../tokens/tokens.model');
 var communitySchema = require('../communities/communities.model');
+var chatroomsSchema = require('../chatrooms/chatrooms.model');
+const Chatroom = mongoose.model('chatroom', chatroomsSchema, 'chatrooms');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
 const Token = mongoose.model('token', tokensSchema, 'tokens'); //export the model
@@ -189,7 +191,45 @@ const UserController = {
 					throw err;
 
 				if (res)
-					response.json({ success: true, user: res });
+					response.json({ success: true, user: user });
+			})
+
+		} catch (err) {
+			response.send({success: false, message: err });
+		}
+	},
+
+	addChatroom: async (request, response) => {
+		try {
+			var userId = request.body.userId;
+			var chatroomId = request.body.chatroomId;
+
+			var user = await User.findById(userId, (err) => {
+				if (err)
+					throw err;
+			})
+
+			var chatroom = await Chatroom.findById(chatroomId, (err) => {
+				if (err)
+					throw err;
+			})
+
+			if (!chatroom) {
+				throw "Chatroom not found";
+			}
+
+			if (user.chatrooms) {
+				user.chatrooms.push(chatroom._id);
+			} else {
+				user.chatrooms = [chatroom._id];
+			}
+
+			User.updateOne({ _id: userId }, user, (err, res) => {
+				if (err)
+					throw err;
+
+				if (res)
+					response.json({ success: true, user: user });
 			})
 
 		} catch (err) {
@@ -200,14 +240,17 @@ const UserController = {
 	removeCommunity: async (request, response) => {
 		try {
 			var userId = request.params.user_id;
-			var communityId = request.body.communityId;
+			var communityId = request.params.community_id;
 
-			var user = User.findById(userId, (err) => {
-				if (err)
+			var user = await User.findById(userId, (err) => {
+				if (err) {
 					throw err;
+				}
 			});
 
-			user.communities = user.communities.filter(c => c != communityId);
+			if (user.communities && user.communities.length > 0) {
+				user.communities = user.communities.filter(c => c != communityId);
+			}
 
 			User.findByIdAndUpdate(userId, user, (err, res) => {
 				if (err) {
@@ -215,7 +258,7 @@ const UserController = {
 				}
 
 				if (res) {
-					response.json({ success: true, user: res });
+					response.json({ success: true, user: user });
 				}
 			});
 
@@ -224,24 +267,61 @@ const UserController = {
 		}
 	},
 
+	removeChatroom: async (request, response) => {
+		try {
+			var userId = request.params.user_id;
+			var chatroomId = request.params.chatroom_id;
+			var user = await User.findById(userId, (err) => {
+				if (err) {
+					throw err;
+				}
+			});
+			
+			if (user.chatrooms && user.chatrooms.length > 0) {
+				user.chatrooms = user.chatrooms.filter(c => c != chatroomId);
+			}
+			User.findByIdAndUpdate(userId, user, (err, res) => {
+				if (err) {
+					response.json({ success: false, message: err });
+				}
+				if (res) {
+					response.json({ success: true, user: user });
+				}
+			});
+		} catch (err) {
+			response.send({success: false, message: err });
+		}
+	},
+
 	getCommunitiesFromUser: async (request, response) => {
 		// request.params.user_id
-		var communityIds = await User.findById(request.params.user_id, "communities", (err) => {
+		var user = await User.findById(request.params.user_id, "communities", (err) => {
 			if (err) {
 				response.json({success: false, message: err });
 			}
 		});
 
-		Community.find({ '_id': { $in: communityIds } }, (err, res) => {
+		Community.find({ '_id': { $in: user.communities } }, (err, res) => {
 			if (err) {
 				response.json({ success: false, message: err });
 			}
 
 			if (res) {
-				response.json({ success: true, communities: res });
+				response.json({ success: true, communities: res.data });
 			}
 		});
 	},
+
+	getChatroomsFromUser: async (request, response) => {
+		User.findById(request.params.user_id, "chatrooms", (err, res) => {
+			if (err)
+				response.send({success: false, message: err });
+
+			if (res)
+				response.json({ success: true, chatrooms: res.data });
+		});
+	},
+
 
 	verifyUser: async (request, response) => {
 		

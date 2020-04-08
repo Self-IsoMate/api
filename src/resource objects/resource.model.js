@@ -6,8 +6,7 @@ const schema = new mongoose.Schema({
 		required: [ true, 'Resource must have a title' ]
 	},
 	body: {
-		type: String,
-		required: [ true, 'Resource must have a body' ]
+		type: String
 	},
 	image: {
 		type: String
@@ -15,6 +14,9 @@ const schema = new mongoose.Schema({
 	categoryId: {
 		type: String,
 		required: [ true, 'Resource must be associated with a category' ]
+	},
+	links: {
+		type: Array
 	}
 });
 
