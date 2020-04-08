@@ -189,7 +189,7 @@ const UserController = {
 					throw err;
 
 				if (res)
-					response.json({ success: true, user: res });
+					response.json({ success: true, user: user });
 			})
 
 		} catch (err) {
@@ -202,12 +202,15 @@ const UserController = {
 			var userId = request.params.user_id;
 			var communityId = request.body.communityId;
 
-			var user = User.findById(userId, (err) => {
-				if (err)
+			var user = await User.findById(userId, (err) => {
+				if (err) {
 					throw err;
+				}
 			});
 
-			user.communities = user.communities.filter(c => c != communityId);
+			if (user.communities && user.communities.length > 0) {
+				user.communities = user.communities.filter(c => c != communityId);
+			}
 
 			User.findByIdAndUpdate(userId, user, (err, res) => {
 				if (err) {
@@ -215,7 +218,7 @@ const UserController = {
 				}
 
 				if (res) {
-					response.json({ success: true, user: res });
+					response.json({ success: true, user: user });
 				}
 			});
 
@@ -226,13 +229,13 @@ const UserController = {
 
 	getCommunitiesFromUser: async (request, response) => {
 		// request.params.user_id
-		var communityIds = await User.findById(request.params.user_id, "communities", (err) => {
+		var user = await User.findById(request.params.user_id, "communities", (err) => {
 			if (err) {
 				response.json({success: false, message: err });
 			}
 		});
 
-		Community.find({ '_id': { $in: communityIds } }, (err, res) => {
+		Community.find({ '_id': { $in: user.communities } }, (err, res) => {
 			if (err) {
 				response.json({ success: false, message: err });
 			}
