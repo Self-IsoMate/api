@@ -24,7 +24,7 @@ var resourceController = require('./src/resource objects/resource.controller');
 // SCHEMAS
 
 
-const CONNECTION_STRING = 'mongodb+srv://sophie:applesAndOranges@self-isomatedb-8bnuw.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const CONNECTION_STRING = process.env.CONNECTION_STRING;
 
 // FUNCTIONS FOR API
 
