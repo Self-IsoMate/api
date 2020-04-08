@@ -16,6 +16,9 @@ const schema = new mongoose.Schema({
   deadline: {
     type: Date,
     required: [true, 'Deadline is required']  
+  },
+  communities: {
+    type: Array
   }
 });
 

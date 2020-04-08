@@ -10,7 +10,8 @@ const challengesController = {
 				title: request.body.title,
 				image: request.body.image,
 				description: request.body.description,
-				deadline: request.body.deadline
+				deadline: request.body.deadline,
+				communities: request.body.communities
 			});
 
 		}
