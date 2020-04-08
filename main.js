@@ -185,6 +185,10 @@ router.route('/resources')
 	.post(resourceController.addResource)
 ;
 
+router.route('/resources/:resource_id')
+	.post(resourceController.addHyperlinkToResource)
+;
+
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
