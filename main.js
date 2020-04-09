@@ -177,7 +177,7 @@ router.route('/users/:user_id/communities')
 ;
 
 // chatroom to user
-router.route('/usersChat')
+router.route('/users/:user_id/chatrooms/')
 	.post(userController.addChatroom)
 ;
 

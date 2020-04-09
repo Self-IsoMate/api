@@ -201,7 +201,7 @@ const UserController = {
 
 	addChatroom: async (request, response) => {
 		try {
-			var userId = request.body.userId;
+			var userId = request.params.user_id;
 			var chatroomId = request.body.chatroomId;
 
 			var user = await User.findById(userId, (err) => {
@@ -230,7 +230,7 @@ const UserController = {
 					throw err;
 
 				if (res)
-					response.json({ success: true, user: user });
+					response.json({ success: true, user: user});
 			})
 
 		} catch (err) {
