@@ -57,7 +57,7 @@ const messagesController = {
 	searchMessage: async (request, response) => {
 				var parameters = request.query;
 		
-				Message.find(parameters,(err, result) => {
+				Message.find(parameters,null, {sort: {dateSent: 1}},(err, result) => {
 					if (err)
 						response.send(err);
 					
