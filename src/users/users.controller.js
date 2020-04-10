@@ -166,7 +166,7 @@ const UserController = {
 
 		} else {
 
-			User.findByIdAndUpdate(request.params.user_id, request.body, (err, res) => {
+			User.findByIdAndUpdate(request.params.user_id, request.body, {new: true}, (err, res) => {
 				if (err) {
 					response.send({success: false, message: err });
 				}
