@@ -151,7 +151,7 @@ const UserController = {
 
 	findUser: async (req, res) => {
 		var parameters = req.query;
-		User.find(parameters, (error, response) => {
+		User.find(parameters, null,{sort: {dateSent: 1}}, (error, response) => {
 			if (error) {
 				res.send({success: false, message: err });
 			}
