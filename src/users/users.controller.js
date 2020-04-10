@@ -137,15 +137,45 @@ const UserController = {
 
 	updateUser: async (request, response) => {
 
-		User.findByIdAndUpdate(request.params.user_id, request.body, (err, res) => {
-			if (err) {
-				response.send({success: false, message: err });
-			}
+		if (request.body.password) {
 
-			if (res) {
-				response.json({ success: true, update: res });
-			}
-		});
+			User.findById(request.params.user_id, (err, res) => {
+				if (err) {
+					response.json({ success: false, message: err });
+					return;
+				}
+
+				if (res) {
+					var user = res;
+					user.setPassword(request.body.password);
+
+					User.findByIdAndUpdate(user._id, { salt: user.salt, hash: user.hash }, {new: true}, (err, res) => {
+						if (err) {
+							response.json({ success: false, message: err });
+							return;
+						}
+
+						if (res) {
+							response.json({ success: true, update: res });
+							return;
+						}
+					});
+
+				}
+			});
+
+		} else {
+
+			User.findByIdAndUpdate(request.params.user_id, request.body, (err, res) => {
+				if (err) {
+					response.send({success: false, message: err });
+				}
+
+				if (res) {
+					response.json({ success: true, update: res });
+				}
+			});
+		}
 
 	},
 
@@ -327,110 +357,102 @@ const UserController = {
 	verifyUser: async (request, response) => {
 		
 		var userEmailToken = await Token.findOne({ email: request.params.email });
+
 		if (!userEmailToken) {
 			response.json({ success: false, message: `token does not exist for user (${request.params.email})` });
 			return (false)
 		}
 
 		var userEmail = await User.findOne({ email: request.params.email });
+
 		if (!userEmail) {
 			response.json({ success: false, message: `user does not exist for email (${request.params.email})` });
 			return (false)
 		}
-			if(userEmail.isVerified == false){
-					if(request.params.token == userEmailToken.token){ 
 
-						User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
+		if (userEmail.isVerified == false){
+			if (request.params.token == userEmailToken.token){ 
+
+				User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
+					if (err) {
+						response.send({success: false, message: err });
+					}
+
+					if (res) {
+						Token.deleteOne({ email:request.params.email }, (err, res) => {
 							if (err) {
 								response.send({success: false, message: err });
 							}
-				
+
 							if (res) {
-								Token.deleteOne({ email:request.params.email }, (err, res) => {
-									if (err) {
-										response.send({success: false, message: err });
-									}
-						
-									if (res) {
-										response.json({ success: true, message: `successfully Email verified (${request.params.email})` });
-									}
-									
-								});
+								response.json({ success: true, message: `successfully Email verified (${request.params.email})` });
 							}
+
 						});
-
 					}
-					else{
-						response.json({ success: false, message: `invalid token (${request.body.token})` });
-						return (false)
-				}
-			}else{
-				response.json({ success: false, message: `email already verified (${request.body.email})` });
-
+				});
+			} else{
+				response.json({ success: false, message: `invalid token (${request.body.token})` });
+				return;
 			}
+		} else {
+			response.json({ success: false, message: `email already verified (${request.body.email})` });
+		}
 	},
 
 	sendVerification: async (request, response) => {
 
 		var userEmail = await User.findOne({ email: request.body.email });
+
 		if (!userEmail) {
 			response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
 			return (false)
 		}
 
-			//create token
-			var userToken = Math.floor(1000 + Math.random() * 9000);
-			try {
-				console.log(request.body.email);
-				console.log(userToken.toString());
-				const doc = await Token.findOneAndUpdate(
-					{ email: request.body.email},
-					{ token: userToken.toString() },
-					// If `new` isn't true, `findOneAndUpdate()` will return the
-					// document as it was _before_ it was updated.
-					{ new: true }
-				  );
-				  console.log(doc.token);
+		//create token
+		var userToken = Math.floor(1000 + Math.random() * 9000);
 
+		try {
+			console.log(request.body.email);
+			console.log(userToken.toString());
+			const doc = await Token.findOneAndUpdate(
+				{ email: request.body.email},
+				{ token: userToken.toString() },
+				// If `new` isn't true, `findOneAndUpdate()` will return the
+				// document as it was _before_ it was updated.
+				{ new: true });
+			console.log(doc.token);
+		}
+		catch (errToken) {
+			console.log("error"+errToken);
+		}
+
+		fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
+			if (err) {
+				console.log(err);
 			}
-			catch (errToken) {
-				console.log("error"+errToken);
-			}
+			else {
+				console.log(request.body.email+"/"+userToken.toString())
+				var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
 
-			fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
-				if (err) {
-					console.log(err);
-				  }
-				  else {
-					  console.log(request.body.email+"/"+userToken.toString())
-					var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
+				let body = {
+					from: process.env.EMAIL_USER,
+					to: request.body.email,
+					subject: "Welcome to Self-Isomate, please confirm email address",
+					html:customHTML
+				}
 
+				transporter.sendMail(body, (errormail, resultmail)=>{
+					if (errormail) {
+						console.log(errormail);
+					}  
 
-			let body = {
+					console.log(resultmail);
+				});
 
-				from: process.env.EMAIL_USER,
-				to: request.body.email,
-				subject: "Welcome to Self-Isomate, please confirm email address",
-				html:customHTML
-			
-			}
-			
-			
-			transporter.sendMail(body, (errormail, resultmail)=>{
-
-				if(errormail){
-					console.log(errormail);
-				}  
-				console.log(resultmail);
-				
-			})
-
-
-			response.json({ success: true, message: `email verification sent at (${request.body.email})` });
+				response.json({ success: true, message: `email verification sent at (${request.body.email})` });
 			}
 		});
-
-
 	},
 	
 	sendReset: async (request, response) => {
@@ -527,58 +549,58 @@ const UserController = {
 
 
 
-resetUser: async (request, response) => {
-	console.log(typeof request+" request "+request);	
-	console.log(typeof request.body +" body "+request.body);	
-	var objRequest = JSON.parse(request.body);
+	resetUser: async (request, response) => {
+		console.log(typeof request+" request "+request);	
+		console.log(typeof request.body +" body "+request.body);	
+		var objRequest = JSON.parse(request.body);
 
-	var userEmailToken = await Token.findOne({ email: objRequest.email }).catch(
-		(err) =>{
-		console.log(err);
-	}
-	);
-	if (!userEmailToken) {
-		response.json({ success: false, message: `token does not exist for user (${objRequest.email})` });
-		return (false)
-	}
+		var userEmailToken = await Token.findOne({ email: objRequest.email }).catch(
+			(err) =>{
+			console.log(err);
+		}
+		);
+		if (!userEmailToken) {
+			response.json({ success: false, message: `token does not exist for user (${objRequest.email})` });
+			return (false)
+		}
 
-	var userEmail = await User.findOne({ email: objRequest.email }).catch(
-		(err) =>{
-		console.log(err);
-	}
-	);
-	if (!userEmail) {
-		response.json({ success: false, message: `user does not exist for email (${objRequest.email})` });
-		return (false)
-	}
-				if(objRequest.token == userEmailToken.token){ 
-					userEmail.setPassword(objRequest.password);				
-					User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
-						if (err) {
-							response.send({success: false, message: err });
-						}
-			
-						if (res) {
-							Token.deleteOne({ email:objRequest.email }, (err, res) => {
-								if (err) {
-									response.send({success: false, message: err });
-								}
-					
-								if (res) {
-									response.json({ success: true, message: `successfully password resetted for user (${objRequest.email})` });
-								}
-								
-							});						
-						}
-					});
+		var userEmail = await User.findOne({ email: objRequest.email }).catch(
+			(err) =>{
+			console.log(err);
+		}
+		);
+		if (!userEmail) {
+			response.json({ success: false, message: `user does not exist for email (${objRequest.email})` });
+			return (false)
+		}
+					if(objRequest.token == userEmailToken.token){ 
+						userEmail.setPassword(objRequest.password);				
+						User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
+							if (err) {
+								response.send({success: false, message: err });
+							}
+				
+							if (res) {
+								Token.deleteOne({ email:objRequest.email }, (err, res) => {
+									if (err) {
+										response.send({success: false, message: err });
+									}
+						
+									if (res) {
+										response.json({ success: true, message: `successfully password resetted for user (${objRequest.email})` });
+									}
+									
+								});						
+							}
+						});
 
+					}
+					else{
+						response.json({ success: false, message: `invalid token (${objRequest.token})` });
+						return (false)
 				}
-				else{
-					response.json({ success: false, message: `invalid token (${objRequest.token})` });
-					return (false)
-			}
-		
-},
+			
+	},
 
 
 	requestLogin: async (request, response) => {
