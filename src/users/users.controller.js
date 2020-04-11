@@ -625,14 +625,15 @@ const UserController = {
 					})
 				} else {
 					response.json({
-						loginSuccess: false
+						loginSuccess: false,
+						message: "Incorrect password"
 					})
 				}
 			}
 
 			if (!res) {
 				console.log("Found nothing");
-				response.json({ loginSuccess: false, message: "User not found" });
+				response.json({ loginSuccess: false, message: "Incorrect username/password" });
 			}
 
 		});
