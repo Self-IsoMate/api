@@ -18,32 +18,44 @@ const postsController = {
                 return;
             }
 
-            Promise.all([user, community]).then((success, failed) => {
+            var existingCommunities = await Community.find({ '_id': { $in: request.body.communities } })
+
+            Promise.all([user, existingCommunities]).then((success) => {
                 if (success) {
 
-                    var [user, community] = success;
+                    var [user, existingCommunities] = success;
 
-                    var post = new Post({
-                        media: request.body.media,
-                        title: request.body.title,
-                        body: request.body.body,
-                        userId: user._id,
-                        communities: request.body.communities,
-                        datePosted: Date.now()
-                    });
-            
-                    post.save((err, post) => {
-                        if (err) {
-                            console.log("error saving post");
-                            response.send(err);
-                        } else {
-                            response.json({ success: true, post: post });
-                        }
-                    });
+                    if (existingCommunities.length != request.body.communities.length) {
+
+                        console.log(`length existing: ${existingCommunities.length}`);
+                        console.log(existingCommunities);
+                        console.log(`length entered: ${request.body.communities.length}`);
+                        response.json({ success: false, message: "Problem adding communities" });
+                        return;
+                    } else {
+                        var post = new Post({
+                            media: request.body.media,
+                            title: request.body.title,
+                            body: request.body.body,
+                            userId: user._id,
+                            communities: request.body.communities,
+                            datePosted: Date.now()
+                        });
+                
+                        post.save((err, post) => {
+                            if (err) {
+                                console.log("error saving post");
+                                response.send(err);
+                            } else {
+                                response.json({ success: true, post: post });
+                            }
+                        });
+                    }
                 }
             })
             .catch((err) => {
                 if (err) {
+                    console.log(err);
                     response.json({ success: false, message: err });
                 }
             });
@@ -67,13 +79,13 @@ const postsController = {
          updatePost: async (request, response) => {
             request.body.dateEdited = new Date();
 
-            Post.findByIdAndUpdate(request.params.post_id, request.body, (err, res) => {
+            Post.findByIdAndUpdate(request.params.post_id, request.body, {new: true}, (err, res) => {
                 if (err) {
                     response.send(err);
                 }
     
                 if (res) {
-                    response.json({ success: true, message: `successfully updated post (${res._id})` });
+                    response.json({ success: true, post: res });
                 }
             });
         },
