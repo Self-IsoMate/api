@@ -47,7 +47,7 @@ const UserController = {
 				isVerified:false,
 				profilePicture: request.body.profilePicture,
 				dateCreated: new Date(),
-				profilePicture: 'https://storage.googleapis.com/self-isomate-images/profile-pictures/OG.png'
+				profilePicture: 'https://storage.googleapis.com/self-isomate-images/profile-pictures/default/OG.png'
 			});
 
 			user.setPassword(request.body.password);
