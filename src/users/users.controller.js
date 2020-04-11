@@ -608,10 +608,16 @@ const UserController = {
 		var password = request.body.password;
 
 		User.findOne({ username: username }, (err, res) => {
-			if (err)
-				response.send(err);
+			if (err) {
+				console.log("got error");
+				response.json({
+					loginSuccess: false,
+					message: err
+				});
+			}
 
 			if (res) {
+				console.log("got response");
 				if (res.validPassword(password)) {
 					response.json({
 						loginSuccess: true,
@@ -622,6 +628,11 @@ const UserController = {
 						loginSuccess: false
 					})
 				}
+			}
+
+			if (!res) {
+				console.log("Found nothing");
+				response.json({ loginSuccess: false, message: "User not found" });
 			}
 
 		});
