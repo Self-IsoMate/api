@@ -72,6 +72,18 @@ const resourcesController = {
 	// delete resource
 
 	// edit resource
+	updateResource: async (request, response) => {
+
+        Resource.findByIdAndUpdate(request.params.resource_id, request.body, {new: true}, (err, res) => {
+            if (err) {
+                response.send(err);
+            }
+
+            if (res) {
+                response.json({ success: true, resource: res });
+            }
+        });
+    },
 
 	// search resources
 	getResources: async (request, response) => {
@@ -115,6 +127,7 @@ const resourcesController = {
 			}
 		});
 	}
+
 
 	// add multiple existing resources to category
 }

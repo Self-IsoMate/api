@@ -203,6 +203,7 @@ router.route('/resources')
 
 router.route('/resources/:resource_id')
 	.post(resourceController.addHyperlinkToResource)
+	.put(resourceController.updateResource)
 ;
 
 // REGISTER OUR ROUTES -------------------------------
