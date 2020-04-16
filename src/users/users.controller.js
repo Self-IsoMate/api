@@ -46,12 +46,10 @@ const UserController = {
 				email: request.body.email,
 				isVerified:false,
 				profilePicture: request.body.profilePicture,
-				dateCreated: new Date(),
-				profilePicture: "https://storage.googleapis.com/self-isomate-images/profile-pictures/default/20.png"
-				/* function() {
-					var picture_id = Math.floor((Math.random() * 20) + 1);
-				  return 'https://storage.googleapis.com/self-isomate-images/profile-pictures/default/' + picture_id + ".png";} */
+				dateCreated: new Date()
 			});
+
+			user.getDefaultPicture();
 
 			user.setPassword(request.body.password);
 			
