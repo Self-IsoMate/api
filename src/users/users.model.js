@@ -48,10 +48,10 @@ User.methods.setPassword = function(password) {
 	console.log(this);
 };
 
-User.method.getDefaultPicture = function() {
+User.methods.getDefaultPicture = function() {
   var picture_id = Math.floor((Math.random() * 20) + 1);
- this.profilePicture =  'https://storage.googleapis.com/self-isomate-images/profile-pictures/default/' + picture_id + ".png"
-  ;} 
+  this.profilePicture =  'https://storage.googleapis.com/self-isomate-images/profile-pictures/default/' + picture_id + ".png"
+};
 
 User.methods.validPassword = function(password) { 
 	var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`); 

@@ -118,6 +118,7 @@ const UserController = {
 			});
 		}
 		catch (err) {
+			console.log(err);
 			response.json({ success: false, message: err });
 		}
 	},
