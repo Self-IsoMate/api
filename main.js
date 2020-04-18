@@ -10,6 +10,9 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 var mongoose   = require('mongoose');
 
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 const path = require ('path');
 
 var userController = require('./src/users/users.controller')
@@ -49,7 +52,7 @@ var router = express.Router();              // get an instance of the express Ro
 
 // more routes for our API will happen here
 
-// User routes
+// /users/
 
 router.route('/users')
 	.post(userController.addUser)
@@ -61,7 +64,34 @@ router.route('/users/:user_id')
 	.put(userController.updateUser)
 ;
 
-// Email Verification routes
+router.route('/users/:user_id/communities')
+	.post(userController.addCommunity)
+	.get(userController.getCommunitiesFromUser)
+;
+
+router.route('/users/:user_id/chatrooms/')
+	.post(userController.addChatroom)
+;
+
+router.route('/usersChat/:user_id')
+	.get(userController.getChatroomsFromUser)
+;
+
+router.route('/users/:user_id/chatrooms/:chatroom_id') 
+	.delete(userController.removeChatroom)
+
+router.route('/users/:user_id/communities/:community_id')
+	.delete(userController.removeCommunity)
+;
+
+// /login/
+
+router.route('/login')
+	.post(userController.requestLogin)
+;
+
+
+// /verify/
 
 router.route('/verify')
 	.post(userController.sendVerification)
@@ -71,7 +101,8 @@ router.route('/verify/:email/:token')
     .get(userController.verifyUser)
 ;
 
-// Password Reset routes
+// sendReset and resetpassword
+
 router.route('/sendReset')
 	.post(userController.sendReset)
 ;
@@ -80,9 +111,7 @@ router.route('/resetpassword')
 	.post(userController.resetUser)
 ;
 
-
-
-// Categories routes
+// /categories/
 
 router.route('/categories')
 	.post(categoryController.addCategory)
@@ -100,7 +129,11 @@ router.route('/categories/:category_id/communities')
 	.post(categoryController.addCommunitiesToCategory)
 ;
 
-// community routes
+router.route('/categories/:category_name/communities')
+	.get(communityController.getCommunitiesFromCategory);
+
+
+// /communities/
 
 router.route('/communities')
 	.post(communityController.addCommunity)
@@ -113,7 +146,11 @@ router.route('/communities/:community_id')
 	.put(communityController.updateCommunity)
 ;
 
-// challenges routes
+
+
+
+// /challenges/
+
 router.route('/challenges')
 	.post(challengesController.addChallenge)
 	.get(challengesController.searchChallenges)
@@ -126,7 +163,8 @@ router.route('/challenges/:challenge_id')
 ;
 
 
-// chatrooms routes
+// /chatrooms
+
 router.route('/chatrooms')
 	.post(chatroomsController.addChatrooms)
 	.get(chatroomsController.searchChatrooms)
@@ -143,7 +181,8 @@ router.route('/chatroomsCommunity/:chatroom_id')
 ;
 
 
-// messages routes
+// /messages/
+
 router.route('/messages')
 	.post(messagesController.addMessage)
 	.get(messagesController.searchMessage)
@@ -155,7 +194,9 @@ router.route('/messages/:message_id')
 	.get(messagesController.getMessage)
 ;
  
-// posts routes
+
+// /posts/
+
 router.route('/posts')
 	.post(postsController.addPost)
 	.get(postsController.searchPosts)
@@ -167,34 +208,7 @@ router.route('/posts/:post_id')
 	.get(postsController.getPost)
 ;
 
-
-router.route('/categories/:category_name/communities')
-	.get(communityController.getCommunitiesFromCategory);
-
-router.route('/users/:user_id/communities')
-	.post(userController.addCommunity)
-	.get(userController.getCommunitiesFromUser)
-;
-
-// chatroom to user
-router.route('/users/:user_id/chatrooms/')
-	.post(userController.addChatroom)
-;
-
-router.route('/usersChat/:user_id')
-	.get(userController.getChatroomsFromUser)
-;
-
-router.route('/users/:user_id/chatrooms/:chatroom_id') 
-	.delete(userController.removeChatroom)
-
-router.route('/users/:user_id/communities/:community_id')
-	.delete(userController.removeCommunity)
-;
-
-router.route('/login')
-	.post(userController.requestLogin)
-;
+// /resources/
 
 router.route('/resources')
 	.get(resourceController.getResources)
@@ -205,6 +219,48 @@ router.route('/resources/:resource_id')
 	.post(resourceController.addHyperlinkToResource)
 	.put(resourceController.updateResource)
 ;
+
+
+// DOCUMENTATION SETUP
+
+// Swagger set up
+const options = {
+	swaggerDefinition: {
+		openapi: "3.0.0",
+		info: {
+			title: "Time to document that Express API you built",
+			version: "1.0.0",
+			description: "A test project to understand how easy it is to document and Express API",
+			license: {
+				name: "Apache 2.0",
+				url: "https://opensource.org/licenses/Apache-2.0"
+			},
+			contact: {
+				name: "Swagger",
+				url: "https://swagger.io",
+				email: "Info@SmartBear.com"
+			}
+		},
+		servers: [
+			{
+				url: "http://localhost:8080/api/"
+			}
+		]
+	},
+	apis: []
+  };
+
+  const specs = swaggerJsdoc(options);
+
+  router.use("/docs", swaggerUi.serve);
+
+  router.get(
+	"/docs",
+	swaggerUi.setup(specs, {
+	  explorer: true
+	})
+  );
+
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
