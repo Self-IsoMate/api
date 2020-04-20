@@ -209,7 +209,13 @@ const UserController = {
 			})
 
 			if (!community) {
+				response.status(404);
 				throw "Community not found";
+			}
+
+			if (!user) {
+				response.status(404);
+				throw "User not found";
 			}
 
 			if (user.communities) {
@@ -219,14 +225,19 @@ const UserController = {
 			}
 
 			User.updateOne({ _id: userId }, user, (err, res) => {
-				if (err)
+				if (err) {
+					response.status(500);
 					throw err;
+				}
 
-				if (res)
+				if (res) {
+					response.status(200);
 					response.json({ success: true, user: user });
+				}
 			})
 
 		} catch (err) {
+			console.log(err);
 			response.send({success: false, message: err });
 		}
 	},
