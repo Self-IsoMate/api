@@ -1,6 +1,57 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
+
+/**
+ * @swagger
+ * ---
+ *  components:
+ *    schemas:
+ *      User:
+ *        type: object
+ *        required:
+ *          - username
+ *          - email
+ *          - isVerified
+ *          - dateCreated
+ *          - hash
+ *          - salt
+ *        properties:
+ *          username:
+ *            type: string
+ *          email:
+ *            type: string
+ *            format: email
+ *            description: Email for the user, needs to be unique.
+ *          isVerified:
+ *            type: boolean
+ *          profilePicture:
+ *            type: string
+ *          dateCreated:
+ *            type: date
+ *          communities:
+ *            type: array
+ *            items:
+ *              type: string
+ *          chatrooms:
+ *            type: array
+ *            items:
+ *              type: string
+ *          hash:
+ *            type: string
+ *          salt:
+ *            type: string
+ *          bio:
+ *            type: string
+ *        example:
+ *            username: alexndr1
+ *            email: a.andr@fake.com
+ *            isVerified: false
+ *            dateCreated: 01/01/2001
+ *            hash: 19024432sbdflksdjfdsf
+ *            salt: sanasdfsdfndsfwqr98q3
+ */
+
 var User = new mongoose.Schema({
   username: {
     type: String,
