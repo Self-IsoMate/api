@@ -252,6 +252,34 @@ router.route('/users/:user_id/chatrooms')
 router.route('/users/:user_id/chatrooms/:chatroom_id') 
 	.delete(userController.removeChatroom)
 
+/**
+ * @swagger
+ *  path:
+ *      /users/{user_id}/communities/{community_id}:
+ *          summary: Delete community from a user.
+ *          tags: [Users]
+ *          parameters:
+ *              - in: path
+ *                name: user_id
+ *                type: string
+ *                description: ID of the user to delete the community from
+ *              - in: path
+ *                name: community_id
+ *                type: string
+ *                description: ID of the community to remove from the user.
+ *          responses:
+ *              "200":
+ *                  description: Community was successfully deleted from user.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  user:
+ *                                      $ref: '#/components/schemas/User'
+ *  
+ */
 router.route('/users/:user_id/communities/:community_id')
 	.delete(userController.removeCommunity)
 ;
