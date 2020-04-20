@@ -54,16 +54,188 @@ var router = express.Router();              // get an instance of the express Ro
 
 // /users/
 
+
+/**
+ * @swagger
+ * tags:
+ *  name: Users
+ *  description: Managing user accounts
+ * 
+ * path:
+ *   /users:
+ *      post:
+ *          summary: Creates a new user and sends a verification email.
+ *          tags: [Users]
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                application/json:
+ *                    schema:
+ *                        type: object
+ *                        properties:
+ *                            username:
+ *                                type: string
+ *                            email:
+ *                                type: string
+ *                            profilePicture:
+ *                                type: string
+ *                            password:
+ *                                type: string
+ *          responses:
+ *              "200":
+ *                  description: The created user
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  user:
+ *                                      $ref: '#/components/schemas/User'
+ *      get:
+ *          summary: Returns a list of users based on filters
+ *          tags: [Users]
+ *          parameters:
+ *              - in: query
+ *                name: _id
+ *                schema:
+ *                  type: string
+ *                description: User ID (automatically generated)
+ *              - in: query
+ *                name: username
+ *                schema:
+ *                  type: string
+ *                description: Username of the user
+ *              - in: query
+ *                name: email
+ *                schema:
+ *                  type: string
+ *                description: Email of the user
+ *              - in: query
+ *                name: isVerified
+ *                schema:
+ *                  type: boolean
+ *                description: Flag to show whether the user has verified their email
+ *              - in: query
+ *                name: profilePicture
+ *                schema:
+ *                  type: string
+ *                description: URL to the user's profile picture
+ *              - in: query
+ *                name: dateCreated
+ *                schema:
+ *                  type: date
+ *                description: Date the account was created
+ *              - in: query
+ *                name: bio
+ *                schema:
+ *                  type: string
+ *                description: User's bio
+ *          responses:
+ *              "200":
+ *                  description: List of users fitting the filters provided
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  users:
+ *                                      type: array
+ *                                      items:
+ *                                          $ref: '#/components/schemas/User'
+ */
 router.route('/users')
 	.post(userController.addUser)
 	.get(userController.findUser)
 ;
 
+
+/**
+ * @swagger
+ * path:
+ *  /users/{user_id}:
+ *      delete:
+ *          summary: Deletes a user's account.
+ *          tags: [Users]
+ *          parameters:
+ *              - in: path
+ *                name: user_id
+ *                type: string
+ *                description: ID of the user to delete
+ *          responses:
+ *              "200":
+ *                  description: Successfully deleted user.
+ *      put:
+ *          summary: Update a user's account info.
+ *          tags: [Users]
+ *          parameters:
+ *              - in: path
+ *                name: user_id
+ *                type: string
+ *                description: ID of the user to update.
+ *          responses:
+ *              "200":
+ *                  description: Successfully updated user.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  user:
+ *                                      $ref: '#/components/schemas/User'
+ */
 router.route('/users/:user_id')
     .delete(userController.deleteUser)
 	.put(userController.updateUser)
 ;
 
+
+/**
+ * @swagger
+ * 
+ * path:
+ *  /users/{user_id}/communities:
+ *      post:
+ *          summary: Add a community to a user.
+ *          tags: [Users]
+ *          parameters:
+ *              - in: path
+ *                name: user_id
+ *                type: string
+ *                description: ID of the user to add the community to.
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          properties:
+ *                              communityId:
+ *                                  type: string
+ *          responses:
+ *              "200":
+ *                  description: Successfully added community to user.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  user:
+ *                                      $ref: '#/components/schemas/User'
+ *              "404":
+ *                  description: User or community not found.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  message:
+ *                                      type: string
+ */
 router.route('/users/:user_id/communities')
 	.post(userController.addCommunity)
 	.get(userController.getCommunitiesFromUser)
@@ -73,7 +245,7 @@ router.route('/users/:user_id/chatrooms/')
 	.post(userController.addChatroom)
 ;
 
-router.route('/usersChat/:user_id')
+router.route('/users/:user_id/chatrooms')
 	.get(userController.getChatroomsFromUser)
 ;
 
@@ -228,18 +400,9 @@ const options = {
 	swaggerDefinition: {
 		openapi: "3.0.0",
 		info: {
-			title: "Time to document that Express API you built",
+			title: "Self IsoMate API",
 			version: "1.0.0",
-			description: "A test project to understand how easy it is to document and Express API",
-			license: {
-				name: "Apache 2.0",
-				url: "https://opensource.org/licenses/Apache-2.0"
-			},
-			contact: {
-				name: "Swagger",
-				url: "https://swagger.io",
-				email: "Info@SmartBear.com"
-			}
+			description: "API to provide an easy interface between application software and the database",
 		},
 		servers: [
 			{
@@ -247,7 +410,7 @@ const options = {
 			}
 		]
 	},
-	apis: []
+	apis: [ './src/users/users.model.js', './main.js' ]
   };
 
   const specs = swaggerJsdoc(options);
