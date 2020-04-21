@@ -1,5 +1,44 @@
 const mongoose = require('mongoose')
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    Post:
+ *      type: object
+ *      required:
+ *        - title
+ *        - body
+ *        - userId
+ *        - communities
+ *      properties:
+ *        media:
+ *          type: string
+ *          description: URL to media of post
+ *        title:
+ *          type: string
+ *          description: title of post
+ *        body:
+ *          type: string
+ *          description: body of post
+ *        userId:
+ *          type: string
+ *          description: ID of the user that made the post
+ *        communities:
+ *          type: array
+ *          items:
+ *            type: string
+ *          description: Array of IDs of communities to post this post to
+ *        datePosted:
+ *          type: date
+ *          description: Date post was posted
+ *      example:
+ *        title: I love to sew
+ *        body: Today, I embroidered a cat onto my duvet
+ *        userId: 23l4bjk324kjb
+ *        communities: [ "123", "456" ]
+ */
+
 const postsSchema = new mongoose.Schema({
   media: {
     type: String

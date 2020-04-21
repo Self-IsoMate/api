@@ -256,28 +256,29 @@ router.route('/users/:user_id/chatrooms/:chatroom_id')
  * @swagger
  *  path:
  *      /users/{user_id}/communities/{community_id}:
- *          summary: Delete community from a user.
- *          tags: [Users]
- *          parameters:
- *              - in: path
- *                name: user_id
- *                type: string
- *                description: ID of the user to delete the community from
- *              - in: path
- *                name: community_id
- *                type: string
- *                description: ID of the community to remove from the user.
- *          responses:
- *              "200":
- *                  description: Community was successfully deleted from user.
- *                  content:
- *                      application/json:
- *                          schema:
- *                              properties:
- *                                  success:
- *                                      type: boolean
- *                                  user:
- *                                      $ref: '#/components/schemas/User'
+ *          delete:
+ *              summary: Delete community from a user.
+ *              tags: [Users]
+ *              parameters:
+ *                  - in: path
+ *                    name: user_id
+ *                    type: string
+ *                    description: ID of the user to delete the community from
+ *                  - in: path
+ *                    name: community_id
+ *                    type: string
+ *                    description: ID of the community to remove from the user.
+ *              responses:
+ *                  "200":
+ *                      description: Community was successfully deleted from user.
+ *                      content:
+ *                          application/json:
+ *                              schema:
+ *                                  properties:
+ *                                      success:
+ *                                          type: boolean
+ *                                      user:
+ *                                          $ref: '#/components/schemas/User'
  *  
  */
 router.route('/users/:user_id/communities/:community_id')
@@ -313,6 +314,87 @@ router.route('/resetpassword')
 
 // /categories/
 
+/**
+ * @swagger
+ * tags:
+ *  name: Categories
+ *  description: Category manager
+ * 
+ * path:
+ *  /categories:
+ *      post:
+ *          summary: Add a new category.
+ *          tags: [Categories]
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          properties:
+ *                              name:
+ *                                  type: string
+ *                              image:
+ *                                  type: string
+ *                              parentId:
+ *                                  type: string
+ *                              communities:
+ *                                  type: array
+ *                                  items:
+ *                                      type: string
+ *          responses:
+ *              "200":
+ *                  description: Successfully added category.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  category:
+ *                                      $ref: '#/components/schemas/Category'
+ *      get:
+ *          summary: Gets a list of categories based on filters.
+ *          tags: [Categories]
+ *          parameters:
+ *              - in: query
+ *                name: _id
+ *                schema:
+ *                  type: string
+ *                description: ID of the category
+ *              - in: query
+ *                name: name
+ *                schema:
+ *                  type: string
+ *                description: Name of the category
+ *              - in: query
+ *                name: image
+ *                schema:
+ *                  type: string
+ *                description: URL of the image associated with a category
+ *              - in: query
+ *                name: isChild
+ *                schema:
+ *                  type: boolean
+ *                description: Whether category has a parent category or not
+ *              - in: query
+ *                name: isLeaf
+ *                description: Whether category has any child categories or not
+ *                schema:
+ *                  type: boolean
+ *          responses:
+ *              "200":
+ *                  description: Successfully returned a list of categories
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  categories:
+ *                                      type: array
+ *                                      items:
+ *                                          $ref: '#/components/schemas/Category'
+ */
 router.route('/categories')
 	.post(categoryController.addCategory)
 	.get(categoryController.searchCategories)
@@ -346,7 +428,53 @@ router.route('/communities/:community_id')
 	.put(communityController.updateCommunity)
 ;
 
-
+/**
+ * @swagger
+ * 
+ * tags:
+ *  name: Feed
+ *  description: Endpoints for a user's feed
+ * 
+ * path:
+ *  /feed/{user_id}:
+ *      get:
+ *          summary: Get a user's feed
+ *          tags: [Feed]
+ *          parameters:
+ *              - in: path
+ *                name: user_id
+ *                schema:
+ *                  type: string
+ *                description: ID of the user to get the feed for
+ *          responses:
+ *              "200":
+ *                  description: Successfully returned posts in user's feed
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  feed:
+ *                                      type: array
+ *                                      items:
+ *                                          $ref: '#/components/schemas/Post'
+ *              "404":
+ *                  description: User was not found
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  message:
+ *                                      type: string
+ * 
+ */
+router.route('/feed/:user_id')
+	.get();
 
 
 // /challenges/
@@ -438,7 +566,7 @@ const options = {
 			}
 		]
 	},
-	apis: [ './src/users/users.model.js', './main.js' ]
+	apis: [ './src/users/users.model.js', './main.js', './src/categories/categories.model.js', './src/posts/posts.model.js' ]
   };
 
   const specs = swaggerJsdoc(options);
