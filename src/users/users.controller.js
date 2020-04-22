@@ -678,7 +678,7 @@ const UserController = {
 
 			var communities = user.communities.map((c) => c.toString());
 
-			Post.find({ communities: { $in: communities } }, (err, res) => {
+			Post.find({ communities: { $in: communities } }, null, { sort: { 'datePosted': -1 } }, (err, res) => {
 				if (err) {
 					status = 500;
 					throw err;
