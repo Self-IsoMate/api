@@ -2,14 +2,18 @@ var mongoose   = require('mongoose');
 var crypto = require('crypto');
 var schema = require('./users.model');
 var cors = require('cors');
+
 var userSchema = require('./users.model');
 var tokensSchema = require('../tokens/tokens.model');
 var communitySchema = require('../communities/communities.model');
 var chatroomsSchema = require('../chatrooms/chatrooms.model');
+var postSchema = require('../posts/posts.model');
+
 const Chatroom = mongoose.model('chatroom', chatroomsSchema, 'chatrooms');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
 const Token = mongoose.model('token', tokensSchema, 'tokens'); //export the model
+const Post = mongoose.model('post', postSchema, 'posts');
 
 const mailer = require("nodemailer");
 require ('dotenv').config();
@@ -209,7 +213,13 @@ const UserController = {
 			})
 
 			if (!community) {
+				response.status(404);
 				throw "Community not found";
+			}
+
+			if (!user) {
+				response.status(404);
+				throw "User not found";
 			}
 
 			if (user.communities) {
@@ -219,14 +229,19 @@ const UserController = {
 			}
 
 			User.updateOne({ _id: userId }, user, (err, res) => {
-				if (err)
+				if (err) {
+					response.status(500);
 					throw err;
+				}
 
-				if (res)
+				if (res) {
+					response.status(200);
 					response.json({ success: true, user: user });
+				}
 			})
 
 		} catch (err) {
+			console.log(err);
 			response.send({success: false, message: err });
 		}
 	},
@@ -639,6 +654,51 @@ const UserController = {
 			}
 
 		});
+	},
+
+	getFeed: async (request, response) => {
+		var status;
+
+		try {
+			var userId = mongoose.Types.ObjectId(request.params.user_id);
+
+			var user = await User.findById(userId, (err) => {
+				if (err) {
+					status = 500;
+					throw err;
+				}
+			});
+
+			if (!user) {
+				status = 404;
+				throw "User not found";
+			}
+
+			console.log(user.communities);
+
+			var communities = user.communities.map((c) => c.toString());
+
+			Post.find({ communities: { $in: communities } }, null, { sort: { 'datePosted': -1 } }, (err, res) => {
+				if (err) {
+					status = 500;
+					throw err;
+				}
+
+				if (res) {
+					console.log(res);
+					response.status(200);
+					response.json({ success: true, feed: res });
+				}
+			});
+
+
+		} catch (err) {
+			console.log("error");
+			console.log(err);
+			status = status || 500;
+			response.status(status);
+			response.json({ success: false, message: err.toString() });
+		}
 	}
 };
 

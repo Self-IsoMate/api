@@ -1,6 +1,63 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 
+
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      User:
+ *        type: object
+ *        required:
+ *          - username
+ *          - email
+ *          - isVerified
+ *          - dateCreated
+ *          - hash
+ *          - salt
+ *        properties:
+ *          username:
+ *            type: string
+ *            description: Username of the user.
+ *          email:
+ *            type: string
+ *            format: email
+ *            description: Email for the user, needs to be unique.
+ *          isVerified:
+ *            type: boolean
+ *            description: Flag to show whether a user has verified their email or not.
+ *          profilePicture:
+ *            type: string
+ *            description: URL to user's profile picture.
+ *          dateCreated:
+ *            type: date
+ *            description: Date the account was created.
+ *          communities:
+ *            type: array
+ *            items:
+ *              type: string
+ *            description: List of community IDs the user is subscribed to.
+ *          chatrooms:
+ *            type: array
+ *            items:
+ *              type: string
+ *            description: List of chatroom IDs the user has added.
+ *          hash:
+ *            type: string
+ *          salt:
+ *            type: string
+ *          bio:
+ *            type: string
+ *            description: User Bio
+ *        example:
+ *            username: alexndr1
+ *            email: a.andr@fake.com
+ *            isVerified: false
+ *            dateCreated: 01/01/2001
+ *            hash: 19024432sbdflksdjfdsf
+ *            salt: sanasdfsdfndsfwqr98q3
+ */
+
 var User = new mongoose.Schema({
   username: {
     type: String,
@@ -22,10 +79,10 @@ var User = new mongoose.Schema({
     required: [true, 'Date created is required']
   },
   communities: {
-    type: Array
+    type: [String]
   },
   chatrooms: {
-    type: Array
+    type: [String]
   },
   hash: {
     type: String,
