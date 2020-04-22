@@ -10,7 +10,7 @@ const chatroomsSchema = new mongoose.Schema({
     type: String
   },
   communities: {
-    type: Array
+    type: [String]
   }
 });
 

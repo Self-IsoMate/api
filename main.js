@@ -243,9 +243,6 @@ router.route('/users/:user_id/communities')
 
 router.route('/users/:user_id/chatrooms/')
 	.post(userController.addChatroom)
-;
-
-router.route('/users/:user_id/chatrooms')
 	.get(userController.getChatroomsFromUser)
 ;
 

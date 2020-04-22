@@ -18,7 +18,7 @@ const schema = new mongoose.Schema({
     required: [true, 'Deadline is required']  
   },
   communities: {
-    type: Array
+    type: [String]
   }
 });
 
