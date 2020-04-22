@@ -57,13 +57,13 @@ const schema = new mongoose.Schema({
 		type: String
 	},
 	children: {
-		type: Array
+		type: [String]
 	},
 	parentId: {
 		type: String
 	},
 	communities: {
-		type: Array
+		type: [String]
 	},
 	isChild: {
 		type: Boolean,
@@ -74,7 +74,7 @@ const schema = new mongoose.Schema({
 		required: [ true, 'isLeaf is required' ]
 	},
 	resources: {
-		type: Array
+		type: [String]
 	}
 });
 

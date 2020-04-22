@@ -79,10 +79,10 @@ var User = new mongoose.Schema({
     required: [true, 'Date created is required']
   },
   communities: {
-    type: Array
+    type: [String]
   },
   chatrooms: {
-    type: Array
+    type: [String]
   },
   hash: {
     type: String,

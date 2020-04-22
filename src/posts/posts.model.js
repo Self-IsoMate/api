@@ -56,7 +56,7 @@ const postsSchema = new mongoose.Schema({
     required: [true, 'User is required']
   },
   communities: {
-    type: Array, // this should be an array of community ids
+    type: [String], // this should be an array of community ids
     required: [true, 'Community is required']  
   },
   datePosted: {

@@ -471,10 +471,21 @@ router.route('/communities/:community_id')
  *                                      type: boolean
  *                                  message:
  *                                      type: string
+ *              "500":
+ *                  description: Exception occurred when retrieving data from the DB.
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              type: object
+ *                              properties:
+ *                                  success:
+ *                                      type: boolean
+ *                                  message:
+ *                                      type: string
  * 
  */
 router.route('/feed/:user_id')
-	.get();
+	.get(userController.getFeed);
 
 
 // /challenges/
