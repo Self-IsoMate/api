@@ -572,9 +572,14 @@ const options = {
 			description: "API to provide an easy interface between application software and the database",
 		},
 		servers: [
+            {
+                url: "http://self-isomate-api.appspot.com/api/",
+                description: "Live server"
+            },
 			{
-				url: "http://localhost:8080/api/"
-			}
+                url: "http://localhost:8080/api/",
+                description: "Local server (must be running locally)"
+            }
 		]
 	},
 	apis: [ './src/users/users.model.js', './main.js', './src/categories/categories.model.js', './src/posts/posts.model.js' ]
