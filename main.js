@@ -506,6 +506,10 @@ router.route('/chatrooms')
 	.get(chatroomsController.searchChatrooms)
 ;
 
+router.route('/chatrooms/request')
+	.post(chatroomsController.requestNewChatroom)
+;
+
 router.route('/chatrooms/:chatroom_id')
 	.delete(chatroomsController.deleteChatrooms)
 	.put(chatroomsController.updateChatroom)

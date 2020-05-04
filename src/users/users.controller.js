@@ -20,14 +20,14 @@ require ('dotenv').config();
 var fs = require('fs');
 
 const transporter = mailer.createTransport({
-    service:"Outlook365", //
+    service:"Outlook365", 
     auth:{
         user:process.env.EMAIL_USER,
         pass:process.env.EMAIL_PASS
     }
 });
 
-var bodyParser = require('body-parser');
+//var bodyParser = require('body-parser');
 
 const UserController = {
 	addUser: async (request, response) => {
