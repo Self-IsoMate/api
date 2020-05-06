@@ -147,8 +147,8 @@ var router = express.Router();              // get an instance of the express Ro
  *                                          $ref: '#/components/schemas/User'
  */
 router.route('/users')
-	.post(userController.addUser)
-	.get(userController.findUser)
+    .post(userController.addUser)
+    .get(userController.findUser)
 ;
 
 
@@ -189,7 +189,7 @@ router.route('/users')
  */
 router.route('/users/:user_id')
     .delete(userController.deleteUser)
-	.put(userController.updateUser)
+    .put(userController.updateUser)
 ;
 
 
@@ -237,17 +237,17 @@ router.route('/users/:user_id')
  *                                      type: string
  */
 router.route('/users/:user_id/communities')
-	.post(userController.addCommunity)
-	.get(userController.getCommunitiesFromUser)
+    .post(userController.addCommunity)
+    .get(userController.getCommunitiesFromUser)
 ;
 
 router.route('/users/:user_id/chatrooms/')
-	.post(userController.addChatroom)
-	.get(userController.getChatroomsFromUser)
+    .post(userController.addChatroom)
+    .get(userController.getChatroomsFromUser)
 ;
 
 router.route('/users/:user_id/chatrooms/:chatroom_id') 
-	.delete(userController.removeChatroom)
+    .delete(userController.removeChatroom)
 
 /**
  * @swagger
@@ -279,20 +279,20 @@ router.route('/users/:user_id/chatrooms/:chatroom_id')
  *  
  */
 router.route('/users/:user_id/communities/:community_id')
-	.delete(userController.removeCommunity)
+    .delete(userController.removeCommunity)
 ;
 
 // /login/
 
 router.route('/login')
-	.post(userController.requestLogin)
+    .post(userController.requestLogin)
 ;
 
 
 // /verify/
 
 router.route('/verify')
-	.post(userController.sendVerification)
+    .post(userController.sendVerification)
 ;
 
 router.route('/verify/:email/:token')
@@ -302,11 +302,11 @@ router.route('/verify/:email/:token')
 // sendReset and resetpassword
 
 router.route('/sendReset')
-	.post(userController.sendReset)
+    .post(userController.sendReset)
 ;
 
 router.route('/resetpassword')
-	.post(userController.resetUser)
+    .post(userController.resetUser)
 ;
 
 // /categories/
@@ -393,36 +393,158 @@ router.route('/resetpassword')
  *                                          $ref: '#/components/schemas/Category'
  */
 router.route('/categories')
-	.post(categoryController.addCategory)
-	.get(categoryController.searchCategories)
+    .post(categoryController.addCategory)
+    .get(categoryController.searchCategories)
 ;
 
+/**
+ * @swagger
+ *  path:
+ *      /categories/{category_id}:
+ *          delete:
+ *              summary: Delete community from a user.
+ *              tags: [Categories]
+ *              parameters:
+ *                  - in: path
+ *                    name: category_id
+ *                    type: string
+ *                    description: ID of the category to delete
+ *              requestBody:
+ *                  required: true
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              properties:
+ *                                  name:
+ *                                      type: string
+ *                                  image:
+ *                                      type: string
+ *                                  parentId:
+ *                                      type: string
+ *                                  communities:
+ *                                      type: array
+ *                                      items:
+ *                                          type: string
+ *              responses:
+ *                  "200":
+ *                      description: Category was successfully deleted
+ *                      content:
+ *                          application/json:
+ *                              schema:
+ *                                  properties:
+ *                                      success:
+ *                                          type: boolean
+ *                                      category:
+ *                                          $ref: '#/components/schemas/Category'
+ *          post:
+ *              summary: Creates and adds a category as a subcategory to the one in the path.
+ *              tags: [Categories]
+ *              parameters:
+ *                  - in: path
+ *                    name: category_id
+ *                    type: string
+ *                    description: ID of the parent category to add the subcategory to.
+ *              responses:
+ *                  "200":
+ *                      description: Category was successfully added
+ *                      content:
+ *                          application/json:
+ *                              schema:
+ *                                  properties:
+ *                                      success:
+ *                                          type: boolean
+ *                                      category:
+ *                                          $ref: '#/components/schemas/Category'
+ */
 router.route('/categories/:category_id')
-	.delete(categoryController.deleteCategory)
-	.put(categoryController.updateCategory)
-	.get(categoryController.getCategory)
-	.post(categoryController.addSubcategory)
+    .delete(categoryController.deleteCategory)
+    .put(categoryController.updateCategory)
+    .get(categoryController.getCategory)
+    .post(categoryController.addSubcategory)
 ;
 
 router.route('/categories/:category_id/communities')
-	.post(categoryController.addCommunitiesToCategory)
+    .post(categoryController.addCommunitiesToCategory)
 ;
 
 router.route('/categories/:category_name/communities')
-	.get(communityController.getCommunitiesFromCategory);
+    .get(communityController.getCommunitiesFromCategory);
 
 
 // /communities/
 
+/**
+ * @swagger
+ * tags:
+ *     name: Communities
+ *     description: Community Manager
+ *
+ * path:
+ *     /communities/:
+ *         get:
+ *             summary: Get communities.
+ *             tags: [Communities]
+ *             parameters:
+ *                 - in: query
+ *                   name: name
+ *                   type: string
+ *                   description: Name of Community
+ *                 - in: query
+ *                   name: image
+ *                   type: string
+ *                   description: URL of image
+ *                 - in: query
+ *                   type: string
+ *                   name: _id
+ *                   description: ID of community
+ *             responses:
+ *                 "200":
+ *                     description: A list of Communities that has been returned
+ *                     content:
+ *                         application/json:
+ *                             schema:
+ *                                 properties:
+ *                                     success:
+ *                                         type: boolean
+ *                                     communities:
+ *                                         type: array
+ *                                         items:
+ *                                             $ref: '#/components/schemas/Community'
+ *     
+ *         post:
+ *             summary: Adds a community
+ *             tags: [Communities]
+ *             requestBody:
+ *                 required: true
+ *                 content:
+ *                     application/json:
+ *                         schema:
+ *                             properties:
+ *                                 name:
+ *                                     type: string
+ *                                 image:
+ *                                     type: string
+ *             responses:
+ *                 "200":
+ *                     description:
+ *                     content:
+ *                         application/json:
+ *                             schema:
+ *                                 properties:
+ *                                     success:
+ *                                         type: boolean
+ *                                     community:
+ *                                         $ref: '#/components/schemas/Community'
+ */
 router.route('/communities')
-	.post(communityController.addCommunity)
-	.get(communityController.getCommunities)
+    .post(communityController.addCommunity)
+    .get(communityController.getCommunities)
 ;
 
 router.route('/communities/:community_id')
-	.get(communityController.getCommunity)
-	.delete(communityController.deleteCommunity)
-	.put(communityController.updateCommunity)
+    .get(communityController.getCommunity)
+    .delete(communityController.deleteCommunity)
+    .put(communityController.updateCommunity)
 ;
 
 /**
@@ -482,28 +604,28 @@ router.route('/communities/:community_id')
  * 
  */
 router.route('/feed/:user_id')
-	.get(userController.getFeed);
+    .get(userController.getFeed);
 
 
 // /challenges/
 
 router.route('/challenges')
-	.post(challengesController.addChallenge)
-	.get(challengesController.searchChallenges)
+    .post(challengesController.addChallenge)
+    .get(challengesController.searchChallenges)
 ;
 
 router.route('/challenges/:challenge_id')
-	.delete(challengesController.deleteChallenge)
-	.put(challengesController.updateChallenge)
-	.get(challengesController.getChallenge)
+    .delete(challengesController.deleteChallenge)
+    .put(challengesController.updateChallenge)
+    .get(challengesController.getChallenge)
 ;
 
 
 // /chatrooms
 
 router.route('/chatrooms')
-	.post(chatroomsController.addChatrooms)
-	.get(chatroomsController.searchChatrooms)
+    .post(chatroomsController.addChatrooms)
+    .get(chatroomsController.searchChatrooms)
 ;
 
 router.route('/chatrooms/request')
@@ -511,53 +633,53 @@ router.route('/chatrooms/request')
 ;
 
 router.route('/chatrooms/:chatroom_id')
-	.delete(chatroomsController.deleteChatrooms)
-	.put(chatroomsController.updateChatroom)
-	.get(chatroomsController.getChatroom)
+    .delete(chatroomsController.deleteChatrooms)
+    .put(chatroomsController.updateChatroom)
+    .get(chatroomsController.getChatroom)
 ;
 
 router.route('/chatroomsCommunity/:chatroom_id')
-	.put(chatroomsController.addCommunityChatroom)
+    .put(chatroomsController.addCommunityChatroom)
 ;
 
 
 // /messages/
 
 router.route('/messages')
-	.post(messagesController.addMessage)
-	.get(messagesController.searchMessage)
+    .post(messagesController.addMessage)
+    .get(messagesController.searchMessage)
 ;
 
 router.route('/messages/:message_id')
-	.delete(messagesController.deleteMessage)
-	.put(messagesController.updateMessage)
-	.get(messagesController.getMessage)
+    .delete(messagesController.deleteMessage)
+    .put(messagesController.updateMessage)
+    .get(messagesController.getMessage)
 ;
  
 
 // /posts/
 
 router.route('/posts')
-	.post(postsController.addPost)
-	.get(postsController.searchPosts)
+    .post(postsController.addPost)
+    .get(postsController.searchPosts)
 ;
 
 router.route('/posts/:post_id')
-	.delete(postsController.deletePost)
-	.put(postsController.updatePost)
-	.get(postsController.getPost)
+    .delete(postsController.deletePost)
+    .put(postsController.updatePost)
+    .get(postsController.getPost)
 ;
 
 // /resources/
 
 router.route('/resources')
-	.get(resourceController.getResources)
-	.post(resourceController.addResource)
+    .get(resourceController.getResources)
+    .post(resourceController.addResource)
 ;
 
 router.route('/resources/:resource_id')
-	.post(resourceController.addHyperlinkToResource)
-	.put(resourceController.updateResource)
+    .post(resourceController.addHyperlinkToResource)
+    .put(resourceController.updateResource)
 ;
 
 
@@ -565,25 +687,25 @@ router.route('/resources/:resource_id')
 
 // Swagger set up
 const options = {
-	swaggerDefinition: {
-		openapi: "3.0.0",
-		info: {
-			title: "Self IsoMate API",
-			version: "1.0.0",
-			description: "API to provide an easy interface between application software and the database",
-		},
-		servers: [
+    swaggerDefinition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Self IsoMate API",
+            version: "1.0.0",
+            description: "API to provide an easy interface between application software and the database",
+        },
+        servers: [
             {
                 url: "http://self-isomate-api.appspot.com/api/",
                 description: "Live server"
             },
-			{
+            {
                 url: "http://localhost:8080/api/",
                 description: "Local server (must be running locally)"
             }
-		]
-	},
-	apis: [ './src/users/users.model.js', './main.js', './src/categories/categories.model.js', './src/posts/posts.model.js' ]
+        ]
+    },
+    apis: [ './src/users/users.model.js', './main.js', './src/categories/categories.model.js', './src/posts/posts.model.js', './src/communities/communities.model.js' ]
   };
 
   const specs = swaggerJsdoc(options);
@@ -591,10 +713,10 @@ const options = {
   router.use("/docs", swaggerUi.serve);
 
   router.get(
-	"/docs",
-	swaggerUi.setup(specs, {
-	  explorer: true
-	})
+    "/docs",
+    swaggerUi.setup(specs, {
+      explorer: true
+    })
   );
 
 
