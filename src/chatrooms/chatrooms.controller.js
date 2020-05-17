@@ -142,8 +142,8 @@ const chatroomsController = {
             let body = {
                 from: process.env.EMAIL_USER,
                 to: process.env.EMAIL_USER,
-                subject: "Welcome to Self-Isomate, please confirm email address",
-                html: "<p>Test</p>"
+                subject: "New Chatroom Request - [INSERT NAME]",
+                html: "<p>Request for chatroom [INSERT NAME] from user [INSERT ID]</p>"
             }
 
             transporter.sendMail(body, (errormail, resultmail) => {
