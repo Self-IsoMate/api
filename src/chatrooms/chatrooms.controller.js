@@ -142,8 +142,10 @@ const chatroomsController = {
             let body = {
                 from: process.env.EMAIL_USER,
                 to: process.env.EMAIL_USER,
-                subject: "New Chatroom Request - [INSERT NAME]",
-                html: "<p>Request for chatroom [INSERT NAME], from user [INSERT ID]</p>"
+                subject: `New Chatroom Request - ${request.body.chatroomName}`,
+                html: 
+                `<p>Chatroom Request: "${request.body.chatroomName}"</p>
+                <p>From: ${request.body.user_id}</p>`
             }
 
             transporter.sendMail(body, (errormail, resultmail) => {
