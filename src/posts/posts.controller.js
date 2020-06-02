@@ -113,8 +113,8 @@ const postsController = {
         },
 
         delMediaPost: async (request, response) => {
-            const bucketName = request.body.bucketName; //self-isomate-images/post-images
-            const filename = request.body.filename //IMG_20200602_140814.jpg
+            const bucketName = request.body.bucketName; // self-isomate-images
+            const filename = request.body.filename // post-images/IMG_20200602_140814.jpg
 
   // Imports the Google Cloud client library
   const {Storage} = require('@google-cloud/storage');
