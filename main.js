@@ -670,6 +670,12 @@ router.route('/posts/:post_id')
     .get(postsController.getPost)
 ;
 
+// /gcloud/
+
+router.route('/gcloud/posts')
+    .post(postsController.delMediaPost)
+;
+
 // /resources/
 
 router.route('/resources')
