@@ -249,7 +249,7 @@ router.route('/users/:user_id/chatrooms/')
 
 router.route('/users/:user_id/chatrooms/:chatroom_id') 
     .delete(userController.removeChatroom)
-
+;
 /**
  * @swagger
  *  path:
@@ -691,6 +691,7 @@ router.route('/faq/:_id/')
 
 router.route('/faq')
     .post(faqController.addQuestion)
+    .get(faqController.getFAQ)
 ;
 
 

@@ -47,7 +47,19 @@ const faqController = {
             }
         });
     },
-
+    
+    getFAQ: async (req, res) => {
+		var parameters = req.query;
+		FAQ.find(parameters, (error, response) => {
+			if (error) {
+				res.send({success: false, message: err });
+			}
+			if (response) {
+				res.json({ success: true, users: response });
+			}
+		});
+    },
+    
     deleteQuestion: async (request, response) => {
         FAQ.findByIdAndDelete(request.params._id, (err, res) => {
             if (err) {
