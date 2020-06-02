@@ -23,6 +23,7 @@ var postsController = require('./src/posts/posts.controller')
 var messagesController = require('./src/messages/messages.controller')
 var chatroomsController = require('./src/chatrooms/chatrooms.controller')
 var resourceController = require('./src/resource objects/resource.controller');
+var faqController = require('./src/faq/faq.controller');
 
 // SCHEMAS
 
@@ -248,7 +249,7 @@ router.route('/users/:user_id/chatrooms/')
 
 router.route('/users/:user_id/chatrooms/:chatroom_id') 
     .delete(userController.removeChatroom)
-
+;
 /**
  * @swagger
  *  path:
@@ -680,6 +681,17 @@ router.route('/resources')
 router.route('/resources/:resource_id')
     .post(resourceController.addHyperlinkToResource)
     .put(resourceController.updateResource)
+;
+
+// /faq/
+router.route('/faq/:_id/')
+    .put(faqController.updateQuestion)
+    .delete(faqController.deleteQuestion)
+;
+
+router.route('/faq')
+    .post(faqController.addQuestion)
+    .get(faqController.getFAQ)
 ;
 
 
