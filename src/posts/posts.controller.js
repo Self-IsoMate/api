@@ -110,7 +110,31 @@ const postsController = {
                 if (res)
                     response.send(res);
             });
+        },
+
+        delMediaPost: async (request, response) => {
+            const bucketName = request.body.bucketName; // self-isomate-images
+            const filename = request.body.filename // post-images/IMG_20200602_140814.jpg
+
+  // Imports the Google Cloud client library
+  const {Storage} = require('@google-cloud/storage');
+
+  // Creates a client
+  const storage = new Storage();
+
+  async function deleteFile() {
+    // Deletes the file from the bucket
+    await storage.bucket(bucketName).file(filename).delete();
+
+    console.log(`gs://${bucketName}/${filename} deleted.`);
+    response.send(`gs://${bucketName}/${filename} deleted.`);
+
+  }
+
+  deleteFile().catch(console.error);
+
+          
         }
-};
+    };
 
 module.exports = postsController;
