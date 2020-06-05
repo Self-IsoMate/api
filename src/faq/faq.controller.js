@@ -55,7 +55,7 @@ const faqController = {
 				res.send({success: false, message: err });
 			}
 			if (response) {
-				res.json({ success: true, users: response });
+				res.json({ success: true, questions: response });
 			}
 		});
     },
