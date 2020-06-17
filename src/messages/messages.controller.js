@@ -68,7 +68,7 @@ const messagesController = {
 
 			   
 		getMessage: async (request, response) => {
-			Message.findById(request.params.message_id, (err, res) => {
+			Message.findById(request.params.message_id.limit(25), (err, res) => {
 					if (err)
 						response.send(err);
 					
