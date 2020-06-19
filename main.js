@@ -24,6 +24,7 @@ var messagesController = require('./src/messages/messages.controller')
 var chatroomsController = require('./src/chatrooms/chatrooms.controller')
 var resourceController = require('./src/resource objects/resource.controller');
 var faqController = require('./src/faq/faq.controller');
+var tokensController = require('./src/tokens/tokens.controller');
 
 // SCHEMAS
 
@@ -698,6 +699,11 @@ router.route('/faq/:_id/')
 router.route('/faq')
     .post(faqController.addQuestion)
     .get(faqController.getFAQ)
+;
+
+//remove manually a token
+router.route('/tokens')
+    .delete(tokensController.deleteToken)
 ;
 
 

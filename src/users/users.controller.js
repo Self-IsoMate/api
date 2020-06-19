@@ -396,7 +396,7 @@ const UserController = {
 					}
 
 					if (res) {
-						Token.deleteOne({ email:request.params.email }, (err, res) => {
+						Token.deleteMany({ email:request.params.email }, (err, res) => {
 							if (err) {
 								response.send({success: false, message: err });
 							}
@@ -598,7 +598,7 @@ const UserController = {
 							}
 				
 							if (res) {
-								Token.deleteOne({ email:objRequest.email }, (err, res) => {
+								Token.deleteMany({ email:objRequest.email }, (err, res) => {
 									if (err) {
 										response.send({success: false, message: err });
 									}

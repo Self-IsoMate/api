@@ -23,6 +23,37 @@ const tokensController = {
 				response.json({ success: true, token: token });
 			}
 		});
-    }
+	},
+	
+	deleteToken: async (request, response) => {
+
+/*
+
+		/api/tokens
+
+{
+    "email":"sophie.norman2@btinternet.com"
+}
+
+*/
+
+		try {
+
+			Token.deleteMany({ email:request.body.email }, (err, res) => {
+				if (err) {
+					response.send({success: false, message: err });
+				}
+
+				if (res) {
+					response.json({ success: true, message: `successfully deleted token (${request.body.email})` });
+				}
+
+			});
+
+		} catch (err) {
+			response.json({ success: false, message: err });
+		}
+	}
+
 };
     module.exports = tokensController;
