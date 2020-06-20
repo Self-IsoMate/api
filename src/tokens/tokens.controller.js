@@ -39,13 +39,13 @@ const tokensController = {
 
 		try {
 
-			Token.deleteMany({ email:request.body.email }, (err, res) => {
+			Token.deleteMany({ email:request.params.email }, (err, res) => {
 				if (err) {
 					response.send({success: false, message: err });
 				}
 
 				if (res) {
-					response.json({ success: true, message: `successfully deleted token (${request.body.email})` });
+					response.json({ success: true, message: `successfully deleted token (${request.params.email})` });
 				}
 
 			});

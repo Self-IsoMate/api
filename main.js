@@ -702,7 +702,7 @@ router.route('/faq')
 ;
 
 //remove manually a token
-router.route('/tokens')
+router.route('/tokens/:email')
     .delete(tokensController.deleteToken)
 ;
 
