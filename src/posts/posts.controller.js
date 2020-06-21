@@ -85,7 +85,7 @@ const postsController = {
             });
         },
 
-        searchPosts: async (request, response) => {//can use User Id to search posts from userid same for community use api/posts/ and JSON{"_id": ""}
+        searchPosts: async (request, response) => {//can use User Id to search posts from userid same for community use api/posts/ and ?userId=5e8767439fb439421c01696e
             var parameters = request.query;
     
             Post.find(parameters,(err, result) => {

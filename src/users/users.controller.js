@@ -386,7 +386,7 @@ const UserController = {
 					}
 
 					if (res) {
-						Token.deleteOne({ email:request.params.email }, (err, res) => {
+						Token.deleteMany({ email:request.params.email }, (err, res) => {
 							if (err) {
 								response.send({ success: false, message: err.message });
 							}
@@ -545,22 +545,21 @@ const UserController = {
 			response.json({ success: false, message: `user does not exist for email (${objRequest.email})` });
 			return (false)
 		}
-
-		if (objRequest.token == userEmailToken.token) { 
+		if (objRequest.token == userEmailToken.token){ 
 			userEmail.setPassword(objRequest.password);				
 			User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
 				if (err) {
-					response.send({success: false, message: err.message });
+					response.send({success: false, message: err });
 				}
 	
 				if (res) {
-					Token.deleteOne({ email:objRequest.email }, (err, res) => {
+					Token.deleteMany({ email:objRequest.email }, (err, res) => {
 						if (err) {
-							response.send({success: false, message: err.messsage });
+							response.send({success: false, message: err });
 						}
 			
 						if (res) {
-							response.json({ success: true });
+							response.json({ success: true, message: `successfully password resetted for user (${objRequest.email})` });
 						}
 						
 					});						
