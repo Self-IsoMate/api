@@ -579,12 +579,12 @@ const UserController = {
 
 		User.findOne({ username: username }, (err, res) => {
 			if (err) {
-				response.json({ succses: false, message: err });
+				response.json({ loginSuccess: false, message: err });
 			}
 
 			if (res) {
 				if (res.validPassword(password)) {
-					response.json({ success: true, user: res })
+					response.json({ loginSuccess: true, user: res })
 				} else {
 					response.json({ loginSuccess: false, message: "Incorrect password" })
 				}
