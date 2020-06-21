@@ -530,7 +530,7 @@ const UserController = {
 			});
 
 		if (!userEmailToken) {
-			response.json({ success: false, message: `token does not exist for user (${objRequest.email})` });
+			response.json({ success: false, message: 'Token not found' });
 			return (false)
 		}
 
@@ -542,7 +542,7 @@ const UserController = {
 			});
 
 		if (!userEmail) {
-			response.json({ success: false, message: `user does not exist for email (${objRequest.email})` });
+			response.json({ success: false, message: 'User not found' });
 			return (false)
 		}
 		if (objRequest.token == userEmailToken.token){ 
@@ -555,18 +555,18 @@ const UserController = {
 				if (res) {
 					Token.deleteMany({ email:objRequest.email }, (err, res) => {
 						if (err) {
-							response.send({success: false, message: err });
+							response.send({success: false, message: err.message });
 						}
 			
 						if (res) {
-							response.json({ success: true, message: `successfully password resetted for user (${objRequest.email})` });
+							response.json({ success: true });
 						}
 						
 					});						
 				}
 			});
 		} else {
-			response.json({ success: false, message: `Invalid token (${objRequest.token})` });
+			response.json({ success: false, message: 'Invalid token' });
 			return (false)
 		}	
 	},
