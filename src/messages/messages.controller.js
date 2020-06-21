@@ -35,7 +35,7 @@ const messagesController = {
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully deleted message (${res._id})` });
+				response.json({ success: true });
 			}
 			
 		});
@@ -43,39 +43,28 @@ const messagesController = {
 	updateMessage: async (request, response) => {
 		
 		Message.findByIdAndUpdate(request.params.message_id, request.body, (err, res) => {
-					if (err) {
-						response.json({success: false, message: err.message});
-					}
-		
-					if (res) {
-						response.json({ success: true, message: `successfully updated message (${res._id})` });
-					}
-				});
-		
-			},
+			if (err) {
+				response.json({success: false, message: err.message});
+			}
+
+			if (res) {
+				response.json({ success: true });
+			}
+		});
+	
+	},
 
 	searchMessage: async (request, response) => {
-				var parameters = request.query;
-		
-				Message.find(parameters,null, {sort: {dateSent: 1}},(err, result) => {
-					if (err)
-						response.json({success: false, message: err.message});
-					
-					if (result)
-						response.send(result);
-				})
-			},
+		var parameters = request.query;
 
-			   
-		getMessage: async (request, response) => {
-			Message.findById(request.params.message_id.limit(20), (err, res) => {
-					if (err)
-						response.json({success: false, message: err.message});
-					
-					if (res)
-						response.send(res);
-				});
-			}
+		Message.find(parameters, null, {sort: {dateSent: 1} }, (err, result) => {
+			if (err)
+				response.json({ success: false, message: err.message });
+			
+			if (result)
+				response.json({ success: true, messages: result })
+		})
+	}
 
 };
 
