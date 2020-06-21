@@ -22,12 +22,12 @@ const chatroomsController = {
         try {
             var existingChatrooms = await Chatroom.find({ chatroomName: request.body.chatroomName }, (err) => {
                 if (err) {
-                    console.log(err)
+                    response.json({success: false, message: err.message});
                 }
             })
             var existingCommunities = await Community.find({ '_id': { $in: request.body.communities } }, (err) => {
                 if (err) {
-                    console.log(err)
+                    response.json({success: false, message: err.message});
                 }
             })
             if (existingChatrooms.length == 0 && (existingCommunities.length == request.body.communities.length)) {
@@ -45,18 +45,17 @@ const chatroomsController = {
                 } else {
                     errorMessage = "Communities List Invalid"
                 }
-                console.log(errorMessage);
                 response.json({ success: false, error: errorMessage });
                 return;
             }
         }
         catch (err) {
-            console.log(err);
+            response.json({success: false, message: err.message});
         }
 
         chatrooms.save((err) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             } else {
                 response.json({ success: true, chatrooms: chatrooms });
             }
@@ -66,7 +65,7 @@ const chatroomsController = {
     updateChatroom: async (request, response) => {
         Chatroom.findByIdAndUpdate(request.params.chatroom_id, request.body, (err, res) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             }
 
             if (res) {
@@ -105,7 +104,7 @@ const chatroomsController = {
 
         Chatroom.findByIdAndDelete(request.params.chatroom_id, (err, res) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             }
 
             if (res) {
@@ -120,7 +119,7 @@ const chatroomsController = {
 
         Chatroom.find(parameters, (err, result) => {
             if (err)
-                response.send(err);
+                response.json({success: false, message: err.message});
 
             if (result)
                 response.send(result);
@@ -130,7 +129,7 @@ const chatroomsController = {
     getChatroom: async (request, response) => {
         Chatroom.findById(request.params.chatroom_id, (err, res) => {
             if (err)
-                response.send(err);
+                response.json({success: false, message: err.message});
 
             if (res)
                 response.send(res);
@@ -150,14 +149,12 @@ const chatroomsController = {
 
             transporter.sendMail(body, (errormail, resultmail) => {
                 if (errormail) {
-                    console.log(errormail);
+                    response.json({success: false, message: errormail.message});
                 }
-                console.log(resultmail);
             });
             response.json({ success: true });
         } catch (err) {
-            console.log(err);
-            response.json({ success: false, message: err });
+            response.json({ success: false, message: err.message });
         }
     }
 }

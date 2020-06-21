@@ -16,12 +16,12 @@ const challengesController = {
 
 		}
 		catch (err) {
-			console.log(err);
+			response.json({success: false, message: err.message});
 		}
 
 		challenge.save((err) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			} else {
 				response.json({ success: true, challenge: challenge });
 			}
@@ -32,11 +32,11 @@ const challengesController = {
 
 		Challenge.findByIdAndDelete( request.params.challenge_id , (err, res) => {
 			if (err) {
-				response.send(err);
+				response.json({ success: false, message: err.message });
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully deleted challenge (${res._id})` });
+				response.json({ success: true });
 			}
 			
 		});
@@ -44,11 +44,9 @@ const challengesController = {
     
     updateChallenge: async (request, response) => {
 
-//		console.log(request.params.challenge_id);
-
 		Challenge.findByIdAndUpdate(request.params.challenge_id, request.body, (err, res) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			}
 
 			if (res) {
@@ -63,7 +61,7 @@ const challengesController = {
 
 		Challenge.find(parameters,(err, result) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (result)
 				response.send(result);
@@ -73,7 +71,7 @@ const challengesController = {
     getChallenge: async (request, response) => {
 		Challenge.findById(request.params.challenge_id, (err, res) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (res)
 				response.send(res);

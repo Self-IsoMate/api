@@ -15,12 +15,12 @@ const messagesController = {
 
 		}
 		catch (err) {
-			console.log(err);
+			response.json({success: false, message: err.message});
 		}
 
 		message.save((err) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			} else {
 				response.json({ success: true, message: message });
 			}
@@ -31,7 +31,7 @@ const messagesController = {
 
 		Message.findByIdAndDelete( request.params.message_id , (err, res) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			}
 
 			if (res) {
@@ -44,7 +44,7 @@ const messagesController = {
 		
 		Message.findByIdAndUpdate(request.params.message_id, request.body, (err, res) => {
 					if (err) {
-						response.send(err);
+						response.json({success: false, message: err.message});
 					}
 		
 					if (res) {
@@ -59,7 +59,7 @@ const messagesController = {
 		
 				Message.find(parameters,null, {sort: {dateSent: 1}},(err, result) => {
 					if (err)
-						response.send(err);
+						response.json({success: false, message: err.message});
 					
 					if (result)
 						response.send(result);
@@ -70,7 +70,7 @@ const messagesController = {
 		getMessage: async (request, response) => {
 			Message.findById(request.params.message_id, (err, res) => {
 					if (err)
-						response.send(err);
+						response.json({success: false, message: err.message});
 					
 					if (res)
 						response.send(res);

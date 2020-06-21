@@ -56,6 +56,10 @@ const crypto = require('crypto');
  *            dateCreated: 01/01/2001
  *            hash: 19024432sbdflksdjfdsf
  *            salt: sanasdfsdfndsfwqr98q3
+ *            communities:
+ *              - abcd
+ *              - efgh
+ *              - ijkl
  */
 
 var User = new mongoose.Schema({
@@ -102,7 +106,6 @@ var User = new mongoose.Schema({
 User.methods.setPassword = function(password) { 
 	this.salt = crypto.randomBytes(16).toString('hex'); 
 	this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`);
-	console.log(this);
 };
 
 User.methods.getDefaultPicture = function() {

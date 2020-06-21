@@ -8,7 +8,7 @@ const faqController = {
         try {
             var existingQuestion = await FAQ.find({ question: request.body.question }, (err) => {
                 if (err) {
-                    console.log(err)
+                    response.json({success: false, message: err.message});
                 }
             })
             if (existingQuestion.length == 0) {
@@ -17,19 +17,17 @@ const faqController = {
                     answer: request.body.answer,
                 });
             } else {
-                errorMessage = "Question already in system"
-                console.log(errorMessage);
-                response.json({ success: false, error: errorMessage });
+                response.json({ success: false, error: 'Question already exists' });
                 return;
             }
         }
         catch (err) {
-            console.log(err);
+            response.json({success: false, message: err.message});
         }
 
         newFAQ.save((err) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             } else {
                 response.json({ success: true, newFAQ: newFAQ });
             }
@@ -39,7 +37,7 @@ const faqController = {
     updateQuestion: async (request, response) => {
         FAQ.findByIdAndUpdate(request.params._id, request.body, (err, res) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             }
 
             if (res) {
@@ -63,7 +61,7 @@ const faqController = {
     deleteQuestion: async (request, response) => {
         FAQ.findByIdAndDelete(request.params._id, (err, res) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             }
 
             if (res) {

@@ -14,7 +14,7 @@ const categoriesController = {
 		if (request.body.parentId) {
 			parent = await Category.findById(request.body.parentId, (err) => {
 				if (err) {
-					response.json({ success: false, message: err });
+					response.json({ success: false, message: err.message });
 				}
 			});
 
@@ -36,7 +36,7 @@ const categoriesController = {
 
 		}
 		catch (err) {
-			console.log(err);
+			response.json({success: false, message: err.message});
 		}
 
 		category.save((err, res) => {
@@ -49,11 +49,10 @@ const categoriesController = {
 					parent.children.push(res._id)
 					Category.findByIdAndUpdate(parent._id, parent, (parentErr, parentRes) => {
 						if (parentErr) { 
-							response.json({success: false, message: parentErr});
+							response.json({success: false, message: parentErr.message });
 						}
 
 						if (parentRes) {
-							console.log(parent);
 							response.json({ success: true, category: category });
 						}
 					});
@@ -77,17 +76,18 @@ const categoriesController = {
 		var parent;
 
 		var category = await Category.findById( request.params.category_id, (err) => {
-			response.json({ success: false, message: err });
+			response.json({ success: false, message: err.message });
 		})
 
 		if (category.children.length > 0) {
+			response.status(404);
 			response.json({ success: false, message: "Category contains children - please delete these first" });
 			return;
 		}
 
 		if (category.parent) {
 			parent = Category.findById(category.parent, (err) => {
-				response.json({ success: false, message: err })
+				response.json({ success: false, message: err.message })
 			})
 
 			parent.children = parent.children.filter((c) => c != category._id);
@@ -95,7 +95,7 @@ const categoriesController = {
 		
 		Category.findByIdAndDelete( request.params.category_id , (err, res) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			}
 
 			if (res) {
@@ -107,12 +107,12 @@ const categoriesController = {
 						}
 
 						if (parentRes) {
-							response.json({ success: true, message: `successfully deleted category (${res._id})` });
+							response.json({ success: true });
 							return;
 						}
 					});
 				} else {
-					response.json({ success: true, message: `successfully deleted category (${res._id})` });
+					response.json({ success: true });
 				}
 
 			}
@@ -122,15 +122,13 @@ const categoriesController = {
 
 	updateCategory: async (request, response) => {
 
-		console.log(request.params.category_id);
-
 		Category.findByIdAndUpdate(request.params.category_id, request.body, (err, res) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully updated category (${res._id})` });
+				response.json({ success: true });
 			}
 		});
 
@@ -139,7 +137,7 @@ const categoriesController = {
 	getCategories: async (request, response) => {
 		Category.find((err, result) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (result)
 				response.send(result);
@@ -149,7 +147,7 @@ const categoriesController = {
 	getCategory: async (request, response) => {
 		Category.findById(request.params.category_id, (err, res) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (res)
 				response.send(res);
@@ -161,7 +159,7 @@ const categoriesController = {
 
 		Category.find(parameters, (err, res) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (res)
 				response.send(res);
@@ -178,13 +176,13 @@ const categoriesController = {
 
 		var child = await Category.findById(request.body.child, (err) => {
 			if (err) {
-				response.json({success: false, message: err});
+				response.json({success: false, message: err.message});
 			}
 		})
 
 		var parent = await Category.findById(request.body.parent, (err) => {
 			if (err) {
-				response.json({success: false, message: err});
+				response.json({success: false, message: err.message});
 			}
 		})
 
@@ -205,7 +203,9 @@ const categoriesController = {
 				}
 			})
 			.catch((err) => {
-				response.json({success: false, message: err});
+				if (err) {
+					response.json({success: false, message: err.message});
+				}
 			})
 
 	},
@@ -220,26 +220,23 @@ const categoriesController = {
 
 		var communityCount = await Community.find({ '_id': { $in: communities } }, (err) => {
 			if (err) {
-				console.log("error in getting the communities");
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 			}
 		});
 
 		if (communityCount.length != communities.length) {
-			console.log("error in the number of communities");
+			response.status(400);
 			response.json({ success: false, message: "Number of communities found does not match entered" });
 			return;
 		}
 
 		var category = await Category.findById(request.params.category_id, (err) => {
 			if (err) {
-				console.log("error in getting the category")
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 			}
 		});
 
 		if (!category) {
-			console.log("error here in the one before the last catch");
 			response.json({ success: false, message: "No category found" });
 			return;
 		}
@@ -248,8 +245,7 @@ const categoriesController = {
 
 		Category.findByIdAndUpdate(category._id, category, (err, res) => {
 			if (err) {
-				console.log("error here in the last catch");
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 				return;
 			}
 

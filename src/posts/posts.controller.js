@@ -5,6 +5,7 @@ var userSchema = require('../users/users.model');
 const Post = mongoose.model('post', postsSchema, 'posts');
 const User = mongoose.model('user', userSchema, 'user_registration'); //export the model
 const Community = mongoose.model('community', communitySchema, 'communities'); //export the model
+const {Storage} = require('@google-cloud/storage');
 
 
 const postsController = {
@@ -14,6 +15,7 @@ const postsController = {
             var user = await User.findById(request.body.userId)
 
             if (!user) {
+                response.status(404);
                 response.json({ success: false, message: "User doesn't exist" });
                 return;
             }
@@ -26,11 +28,7 @@ const postsController = {
                     var [user, existingCommunities] = success;
 
                     if (existingCommunities.length != request.body.communities.length) {
-
-                        console.log(`length existing: ${existingCommunities.length}`);
-                        console.log(existingCommunities);
-                        console.log(`length entered: ${request.body.communities.length}`);
-                        response.json({ success: false, message: "Problem adding communities" });
+                        response.json({ success: false, message: 'Could not add communities' });
                         return;
                     } else {
                         var post = new Post({
@@ -44,8 +42,7 @@ const postsController = {
                 
                         post.save((err, post) => {
                             if (err) {
-                                console.log("error saving post");
-                                response.send(err);
+                                response.json({success: false, message: err.message});
                             } else {
                                 response.json({ success: true, post: post });
                             }
@@ -55,8 +52,7 @@ const postsController = {
             })
             .catch((err) => {
                 if (err) {
-                    console.log(err);
-                    response.json({ success: false, message: err });
+                    response.json({ success: false, message: err.message });
                 }
             });
         },
@@ -64,13 +60,12 @@ const postsController = {
         deletePost: async (request, response) => {
 
             Post.findByIdAndDelete( request.params.post_id , (err, res) => {
-                console.log(err)
                 if (err) {
-                    response.send(err);
+                    response.json({success: false, message: err.message});
                 }
 
                 if (res) {
-                    response.json({ success: true, message: `successfully deleted post (${res._id})` });
+                    response.json({ success: true });
                 }
                 
             });
@@ -81,7 +76,7 @@ const postsController = {
 
             Post.findByIdAndUpdate(request.params.post_id, request.body, {new: true}, (err, res) => {
                 if (err) {
-                    response.send(err);
+                    response.json({success: false, message: err.message});
                 }
     
                 if (res) {
@@ -95,7 +90,7 @@ const postsController = {
     
             Post.find(parameters,(err, result) => {
                 if (err)
-                    response.send(err);
+                    response.json({success: false, message: err.message});
                 
                 if (result)
                     response.send(result);
@@ -105,7 +100,7 @@ const postsController = {
         getPost: async (request, response) => {
             Post.findById(request.params.post_id, (err, res) => {
                 if (err)
-                    response.send(err);
+                    response.json({success: false, message: err.message});
                 
                 if (res)
                     response.send(res);
@@ -116,24 +111,22 @@ const postsController = {
             const bucketName = request.body.bucketName; // self-isomate-images
             const filename = request.body.filename // post-images/IMG_20200602_140814.jpg
 
-  // Imports the Google Cloud client library
-  const {Storage} = require('@google-cloud/storage');
+            // Imports the Google Cloud client library
 
-  // Creates a client
-  const storage = new Storage();
+            // Creates a client
+            const storage = new Storage();
 
-  async function deleteFile() {
-    // Deletes the file from the bucket
-    await storage.bucket(bucketName).file(filename).delete();
+            async function deleteFile() {
+                // Deletes the file from the bucket
+                await storage.bucket(bucketName).file(filename).delete();
+                response.json({ success: true });
+            }
 
-    console.log(`gs://${bucketName}/${filename} deleted.`);
-    response.send(`gs://${bucketName}/${filename} deleted.`);
-
-  }
-
-  deleteFile().catch(console.error);
-
-          
+            deleteFile()
+                .catch((err) => {
+                    if (err)
+                        response.json({ success: false, message: err.message })
+                });          
         }
     };
 
