@@ -24,11 +24,12 @@ const resourcesController = {
 		if (request.body.categoryId) {
 			category = await Category.findById(request.body.categoryId, (err) => {
 				if (err) {
-					response.json({ success: false, message: err });
+					response.json({ success: false, message: err.message });
 				}
 			});
 
 			if (!category) {
+				response.status(404);
 				response.json({ success: false, message: "No category found" });
 			}
 		}
@@ -43,7 +44,7 @@ const resourcesController = {
 
 		resource.save((err, res) => {
 			if (err) {
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 			}
 
 			if (res) {
@@ -76,7 +77,7 @@ const resourcesController = {
 
         Resource.findByIdAndUpdate(request.params.resource_id, request.body, {new: true}, (err, res) => {
             if (err) {
-                response.send(err);
+                response.json({success: false, message: err.message});
             }
 
             if (res) {
@@ -89,7 +90,7 @@ const resourcesController = {
 	getResources: async (request, response) => {
 		Resource.find(request.query, (err, res) => {
 			if (err) {
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 			}
 
 			if (res) {
@@ -111,7 +112,8 @@ const resourcesController = {
 		});
 
 		if (!resource) {
-			response.json({ success: false, message: "Problem getting the resource" });
+			response.status(404);
+			response.json({ success: false, message: "Resource not found" });
 			return;
 		}
 
@@ -119,7 +121,7 @@ const resourcesController = {
 
 		Resource.findByIdAndUpdate(resource._id, resource, (err, res) => {
 			if (err) {
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 			}
 
 			if (res) {

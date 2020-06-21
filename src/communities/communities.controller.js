@@ -13,7 +13,7 @@ const CommunityController = {
 
 		var category = await Category.findById(request.body.categoryId, (err) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 		});
 
 		try {
@@ -23,13 +23,13 @@ const CommunityController = {
 			});
 			
 			community.save((err, result) => {
-				if (err) response.json({ success: false, message: err });
+				if (err) response.json({ success: false, message: err.message });
 
 				if (result) response.json({ success: true, community: result });
 			})
 		}
 		catch (err) {
-			response.send(err);
+			response.json({success: false, message: err.message});
 		}
 	},
 
@@ -41,7 +41,7 @@ const CommunityController = {
 
 			Community.deleteOne({ _id: request.params.community_id }, (err, res) => {
 				if (err) {
-					response.json({ success: false, message: err });
+					response.json({ success: false, message: err.message });
 				}
 
 				if (res) {
@@ -51,7 +51,7 @@ const CommunityController = {
 			});
 
 		} catch (err) {
-			response.json({ success: false, message: err });
+			response.json({ success: false, message: err.message });
 		}
 	},
 
@@ -65,7 +65,7 @@ const CommunityController = {
 
 		Community.findByIdAndUpdate(request.params.community_id, request.body, (err, res) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			}
 
 			if (res) {
@@ -78,7 +78,7 @@ const CommunityController = {
 	getCommunity: async (request, response) => {
 		Community.findById(request.params.community_id, (err, res) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (res)
 				response.json({ success: true, community: res });
@@ -90,7 +90,7 @@ const CommunityController = {
 
 		Community.find(parameters, (err, res) => {
 			if (err)
-				response.send(err);
+				response.json({success: false, message: err.message});
 			
 			if (res)
 				response.send(res);
@@ -101,7 +101,7 @@ const CommunityController = {
 		var parameter = request.params.category_name;
 
 		Category.findOne({ name: category_name }, 'communities', (err, res) => {
-			if (err) response.json({ success: false, message: err });
+			if (err) response.json({ success: false, message: err.message });
 
 			if (res) response.json({ success: true, communities: res });
 		});

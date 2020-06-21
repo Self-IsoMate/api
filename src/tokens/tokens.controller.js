@@ -13,12 +13,12 @@ const tokensController = {
 
 		}
 		catch (err) {
-			console.log(err);
+			response.json({success: false, message: err.message});
 		}
 
 		token.save((err) => {
 			if (err) {
-				response.send(err);
+				response.json({success: false, message: err.message});
 			} else {
 				response.json({ success: true, token: token });
 			}

@@ -36,19 +36,19 @@ const UserController = {
 			var existingUser = await User.findOne({ username: request.body.username });
 
 			if (existingUser && existingUser.username) {
-				throw "username already used";
+				throw new Error("Username already exists");
 			}
 
 			existingUser = await User.findOne({ email: request.body.email });
 
 			if (existingUser && existingUser.email) {
-				throw "email already used";
+				throw new Error("Email already exists");
 			}
 
 			var user = new User({
 				username: request.body.username,
 				email: request.body.email,
-				isVerified:false,
+				isVerified: false,
 				profilePicture: request.body.profilePicture,
 				dateCreated: new Date()
 			});
@@ -59,7 +59,7 @@ const UserController = {
 			
 			user.save((err) => {
 				if (err) {
-					response.send(err);
+					response.json({ success: false, message: err.message });
 				} else {
 
 					//create token
@@ -72,14 +72,12 @@ const UserController = {
 			
 					}
 					catch (errToken) {
-						console.log(errToken);
+						response.json({ success: false, message: errToken.message });
 					}
 			
 					token.save((errToken) => {
 						if (errToken) {
-							response.send(errToken);
-						} else {
-							console.log(token);
+							response.json({ success: false, message: errToken.message });
 						}
 					});
 
@@ -88,42 +86,33 @@ const UserController = {
 
 					fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
 						if (err) {
-							console.log(err);
-						  }
-						  else {
-							  console.log(request.body.email+"/"+userToken.toString())
-							var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
+							response.json({ success: false, message: err.message });
+						} else {
+							var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());
 
-
-					let body = {
-
-						from: process.env.EMAIL_USER,
-						to: request.body.email,
-						subject: "Welcome to Self-Isomate, please confirm email address",
-						html:customHTML
-					
-					}
-					
-					
-					transporter.sendMail(body, (errormail, resultmail)=>{
-
-						if(errormail){
-							console.log(errormail);
-						}  
-						console.log(resultmail);
+							let body = {
+								from: process.env.EMAIL_USER,
+								to: request.body.email,
+								subject: "Welcome to Self-Isomate, please confirm email address",
+								html: customHTML
+							}
 						
-					})
-  
+							transporter.sendMail(body, (errormail, resultmail) => {
+								if (errormail) {
+									response.json({ success: false, message: errormail.message });
+								}  
+							})
 
-					response.json({ success: true, user: user });
-					}
-				});
+							response.json({ success: true, user: user });
+						}
+					});
 				}
 			});
 		}
 		catch (err) {
-			console.log(err);
-			response.json({ success: false, message: err });
+			if (err) {
+				response.json({ success: false, message: err.message });
+			}
 		}
 	},
 
@@ -131,11 +120,11 @@ const UserController = {
 
 		User.deleteOne({ _id: request.params.user_id }, (err, res) => {
 			if (err) {
-				response.send({success: false, message: err });
+				response.send({success: false, message: err.message });
 			}
 
 			if (res) {
-				response.json({ success: true, message: `successfully deleted user (${request.params.user_id})` });
+				response.json({ success: true });
 			}
 			
 		});
@@ -147,7 +136,7 @@ const UserController = {
 
 			User.findById(request.params.user_id, (err, res) => {
 				if (err) {
-					response.json({ success: false, message: err });
+					response.json({ success: false, message: err.message });
 					return;
 				}
 
@@ -157,7 +146,7 @@ const UserController = {
 
 					User.findByIdAndUpdate(user._id, { salt: user.salt, hash: user.hash }, {new: true}, (err, res) => {
 						if (err) {
-							response.json({ success: false, message: err });
+							response.json({ success: false, message: err.message });
 							return;
 						}
 
@@ -174,7 +163,7 @@ const UserController = {
 
 			User.findByIdAndUpdate(request.params.user_id, request.body, {new: true}, (err, res) => {
 				if (err) {
-					response.send({success: false, message: err });
+					response.send({success: false, message: err.message });
 				}
 
 				if (res) {
@@ -189,7 +178,7 @@ const UserController = {
 		var parameters = req.query;
 		User.find(parameters, (error, response) => {
 			if (error) {
-				res.send({success: false, message: err });
+				res.send({success: false, message: err.message });
 			}
 			if (response) {
 				res.json({ success: true, users: response });
@@ -214,12 +203,12 @@ const UserController = {
 
 			if (!community) {
 				response.status(404);
-				throw "Community not found";
+				throw new Error("Community not found");
 			}
 
 			if (!user) {
 				response.status(404);
-				throw "User not found";
+				throw new Error("User not found");
 			}
 
 			if (user.communities) {
@@ -241,8 +230,7 @@ const UserController = {
 			})
 
 		} catch (err) {
-			console.log(err);
-			response.send({success: false, message: err });
+			response.send({success: false, message: err.message });
 		}
 	},
 
@@ -263,7 +251,7 @@ const UserController = {
 
 			
 			if (!chatroom) {
-				throw "Chatroom not found";
+				throw new Error("Chatroom not found");
 			}
 
 			if (user.chatrooms) {
@@ -281,7 +269,7 @@ const UserController = {
 			})
 
 		} catch (err) {
-			response.send({success: false, message: err });
+			response.send({success: false, message: err.message });
 		}
 	},
 
@@ -302,7 +290,7 @@ const UserController = {
 
 			User.findByIdAndUpdate(userId, user, (err, res) => {
 				if (err) {
-					response.json({ success: false, message: err });
+					response.json({ success: false, message: err.message });
 				}
 
 				if (res) {
@@ -311,7 +299,7 @@ const UserController = {
 			});
 
 		} catch (err) {
-			response.send({success: false, message: err });
+			response.send({success: false, message: err.message });
 		}
 	},
 
@@ -330,14 +318,14 @@ const UserController = {
 			}
 			User.findByIdAndUpdate(userId, user, (err, res) => {
 				if (err) {
-					response.json({ success: false, message: err });
+					response.json({ success: false, message: err.message });
 				}
 				if (res) {
 					response.json({ success: true, user: user });
 				}
 			});
 		} catch (err) {
-			response.send({success: false, message: err });
+			response.send({success: false, message: err.message });
 		}
 	},
 
@@ -345,13 +333,13 @@ const UserController = {
 		// request.params.user_id
 		var user = await User.findById(request.params.user_id, "communities", (err) => {
 			if (err) {
-				response.json({success: false, message: err });
+				response.json({success: false, message: err.message });
 			}
 		});
 
 		Community.find({ '_id': { $in: user.communities } }, (err, res) => {
 			if (err) {
-				response.json({ success: false, message: err });
+				response.json({ success: false, message: err.message });
 			}
 
 			if (res) {
@@ -363,7 +351,7 @@ const UserController = {
 	getChatroomsFromUser: async (request, response) => {
 		User.findById(request.params.user_id, "chatrooms", (err, res) => {
 			if (err)
-				response.send({success: false, message: err });
+				response.send({success: false, message: err.message });
 
 			if (res)
 				response.json({ success: true, chatrooms: res.chatrooms });
@@ -376,14 +364,16 @@ const UserController = {
 		var userEmailToken = await Token.findOne({ email: request.params.email });
 
 		if (!userEmailToken) {
-			response.json({ success: false, message: `token does not exist for user (${request.params.email})` });
+			response.status(404);
+			response.json({ success: false, message: "Token not found" });
 			return (false)
 		}
 
 		var userEmail = await User.findOne({ email: request.params.email });
 
 		if (!userEmail) {
-			response.json({ success: false, message: `user does not exist for email (${request.params.email})` });
+			response.status(404);
+			response.json({ success: false, message: "User not found" });
 			return (false)
 		}
 
@@ -392,28 +382,30 @@ const UserController = {
 
 				User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
 					if (err) {
-						response.send({success: false, message: err });
+						response.send({success: false, message: err.message });
 					}
 
 					if (res) {
 						Token.deleteMany({ email:request.params.email }, (err, res) => {
 							if (err) {
-								response.send({success: false, message: err });
+								response.send({ success: false, message: err.message });
 							}
 
 							if (res) {
-								response.json({ success: true, message: `successfully Email verified (${request.params.email})` });
+								response.json({ success: true });
 							}
 
 						});
 					}
 				});
 			} else{
-				response.json({ success: false, message: `invalid token (${request.body.token})` });
+				response.status(500);
+				response.json({ success: false, message: "Invalid token" });
 				return;
 			}
 		} else {
-			response.json({ success: false, message: `email already verified (${request.body.email})` });
+			response.status(400);
+			response.json({ success: false, message: "Email already verified" });
 		}
 	},
 
@@ -422,7 +414,8 @@ const UserController = {
 		var userEmail = await User.findOne({ email: request.body.email });
 
 		if (!userEmail) {
-			response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
+			response.status(404);
+			response.json({ success: false, message: "User not found" });
 			return (false)
 		}
 
@@ -430,26 +423,17 @@ const UserController = {
 		var userToken = Math.floor(1000 + Math.random() * 9000);
 
 		try {
-			console.log(request.body.email);
-			console.log(userToken.toString());
-			const doc = await Token.findOneAndUpdate(
-				{ email: request.body.email},
-				{ token: userToken.toString() },
-				// If `new` isn't true, `findOneAndUpdate()` will return the
-				// document as it was _before_ it was updated.
-				{ new: true });
-			console.log(doc.token);
+			const doc = await Token.findOneAndUpdate({ email: request.body.email}, { token: userToken.toString() }, { new: true });
 		}
 		catch (errToken) {
-			console.log("error"+errToken);
+			response.json({ success: false, message: errToken.message });
 		}
 
 		fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
 			if (err) {
-				console.log(err);
+				response.json({success: false, message: err.message});
 			}
 			else {
-				console.log(request.body.email+"/"+userToken.toString())
 				var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
 
 				let body = {
@@ -461,13 +445,11 @@ const UserController = {
 
 				transporter.sendMail(body, (errormail, resultmail)=>{
 					if (errormail) {
-						console.log(errormail);
-					}  
-
-					console.log(resultmail);
+						response.json({success: false, message: errormail.message});
+					}
 				});
 
-				response.json({ success: true, message: `email verification sent at (${request.body.email})` });
+				response.json({ success: true });
 			}
 		});
 	},
@@ -479,144 +461,114 @@ const UserController = {
 			response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
 			return (false)
 		}
+
 		var userToken = Math.floor(1000 + Math.random() * 9000);
-		console.log(userToken);
-		var existingtoken = await Token.findOne({email:request.body.email});
+		var existingtoken = await Token.findOne({ email: request.body.email });
 		
 		if (!existingtoken) {
 			
-					//create token
-					try {
-						var token = new Token({
-							email: request.body.email,
-							token: userToken.toString()             
-						});
-			
-					}
-					catch (errToken) {
-						console.log(errToken);
-					}
-			
-					token.save((errToken) => {
-						if (errToken) {
-							response.send(errToken);
-						} else {
-							console.log(token);
-						}
-					});
+			//create token
+			try {
+				var token = new Token({
+					email: request.body.email,
+					token: userToken.toString()             
+				});
+	
+			} catch (errToken) {
+				response.json({success: false, message: errToken.message});
+			}
+	
+			token.save((errToken) => {
+				if (errToken) {
+					response.json({success: false, message: errToken.message});
+				}
+			});
 
-		}else{
+		} else {
 
 			try {
-				console.log(request.body.email);
-				console.log(userToken.toString());
-				const doc = await Token.findOneAndUpdate(
-					{ email: request.body.email},
-					{ token: userToken.toString() },
-					// If `new` isn't true, `findOneAndUpdate()` will return the
-					// document as it was _before_ it was updated.
-					{ new: true }
-				  );
-				  console.log(doc.token);
-
-			}
-			catch (errToken) {
-				console.log(errToken);
+				const doc = await Token.findOneAndUpdate( { email: request.body.email}, { token: userToken.toString() }, { new: true });
+			} catch (errToken) {
+				response.json({success: false, message: errToken.message});
 			}
 
 		}
 
-	
-
-		fs.readFile("./src/email/resetpassword.html", {encoding: 'utf-8'}, function (err, html) {
+		fs.readFile("./src/email/resetpassword.html", {encoding: 'utf-8'}, (err, html) => {
 			if (err) {
-				console.log(err);
-			  }
-			  else {
-				  console.log("?email="+request.body.email+"&token="+userToken.toString())
+				response.json({success: false, message: err.message});
+			} else {
 				var customHTML = html.replace(/TOKENREPLACEMENT/g, "?email="+request.body.email+"&token="+userToken.toString());//tokenreplacement will be exchanged with real token and email
-
-
-		let body = {
-
-			from: process.env.EMAIL_USER,
-			to: request.body.email,
-			subject: "Self-Isomate - Reset Password",
-			html:customHTML
-		
-		}
-		
-		
-		transporter.sendMail(body, (errormail, resultmail)=>{
-
-			if(errormail){
-				console.log(errormail);
-			}  
-			console.log(resultmail);
-			
-		})
-
-
-		response.json({ success: true, message: `email reset sent to (${request.body.email})` });
-	}
-	});
-
-
-},
-
-
-
-	resetUser: async (request, response) => {
-		console.log(typeof request+" request "+request);	
-		console.log(typeof request.body +" body "+request.body);	
-		var objRequest = JSON.parse(request.body);
-
-		var userEmailToken = await Token.findOne({ email: objRequest.email }).catch(
-			(err) =>{
-			console.log(err);
-		}
-		);
-		if (!userEmailToken) {
-			response.json({ success: false, message: `token does not exist for user (${objRequest.email})` });
-			return (false)
-		}
-
-		var userEmail = await User.findOne({ email: objRequest.email }).catch(
-			(err) =>{
-			console.log(err);
-		}
-		);
-		if (!userEmail) {
-			response.json({ success: false, message: `user does not exist for email (${objRequest.email})` });
-			return (false)
-		}
-					if(objRequest.token == userEmailToken.token){ 
-						userEmail.setPassword(objRequest.password);				
-						User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
-							if (err) {
-								response.send({success: false, message: err });
-							}
 				
-							if (res) {
-								Token.deleteMany({ email:objRequest.email }, (err, res) => {
-									if (err) {
-										response.send({success: false, message: err });
-									}
-						
-									if (res) {
-										response.json({ success: true, message: `successfully password resetted for user (${objRequest.email})` });
-									}
-									
-								});						
-							}
-						});
-
-					}
-					else{
-						response.json({ success: false, message: `invalid token (${objRequest.token})` });
-						return (false)
+				let body = {
+					from: process.env.EMAIL_USER,
+					to: request.body.email,
+					subject: "Self-Isomate - Reset Password",
+					html: customHTML
 				}
 			
+			
+				transporter.sendMail(body, (errormail, resultmail) => {
+					if(errormail){
+						response.json({success: false, message: errormail.message});
+					} 
+				});
+				
+				response.json({ success: true });
+			}
+		});
+	},
+
+	resetUser: async (request, response) => {
+		var objRequest = JSON.parse(request.body);
+
+		var userEmailToken = await Token.findOne({ email: objRequest.email })
+			.catch((err) => {
+				if (err) {
+					response.json({success: false, message: err.message});
+				}
+			});
+
+		if (!userEmailToken) {
+			response.json({ success: false, message: 'Token not found' });
+			return (false)
+		}
+
+		var userEmail = await User.findOne({ email: objRequest.email })
+			.catch((err) => {
+				if (err) {
+					response.json({success: false, message: err.message});
+				}
+			});
+
+		if (!userEmail) {
+			response.json({ success: false, message: 'User not found' });
+			return (false)
+		}
+		if (objRequest.token == userEmailToken.token){ 
+			userEmail.setPassword(objRequest.password);				
+			User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
+				if (err) {
+					response.send({success: false, message: err });
+				}
+	
+				if (res) {
+					Token.deleteMany({ email:objRequest.email }, (err, res) => {
+						if (err) {
+							response.send({success: false, message: err.message });
+						}
+			
+						if (res) {
+							response.json({ success: true });
+						}
+						
+					});						
+				}
+			});
+		} else {
+			response.json({ success: false, message: 'Invalid token' });
+			return (false)
+		}	
 	},
 
 
@@ -626,30 +578,18 @@ const UserController = {
 
 		User.findOne({ username: username }, (err, res) => {
 			if (err) {
-				console.log("got error");
-				response.json({
-					loginSuccess: false,
-					message: err
-				});
+				response.json({ loginSuccess: false, message: err });
 			}
 
 			if (res) {
-				console.log("got response");
 				if (res.validPassword(password)) {
-					response.json({
-						loginSuccess: true,
-						user: res
-					})
+					response.json({ loginSuccess: true, user: res })
 				} else {
-					response.json({
-						loginSuccess: false,
-						message: "Incorrect password"
-					})
+					response.json({ loginSuccess: false, message: "Incorrect password" })
 				}
 			}
 
 			if (!res) {
-				console.log("Found nothing");
 				response.json({ loginSuccess: false, message: "Incorrect username/password" });
 			}
 
@@ -671,10 +611,8 @@ const UserController = {
 
 			if (!user) {
 				status = 404;
-				throw "User not found";
+				throw new Error("User not found");
 			}
-
-			console.log(user.communities);
 
 			var communities = user.communities.map((c) => c.toString());
 
@@ -685,7 +623,6 @@ const UserController = {
 				}
 
 				if (res) {
-					console.log(res);
 					response.status(200);
 					response.json({ success: true, feed: res });
 				}
@@ -693,11 +630,9 @@ const UserController = {
 
 
 		} catch (err) {
-			console.log("error");
-			console.log(err);
 			status = status || 500;
 			response.status(status);
-			response.json({ success: false, message: err.toString() });
+			response.json({ success: false, message: err.message });
 		}
 	}
 };
