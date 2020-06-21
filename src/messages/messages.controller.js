@@ -64,6 +64,17 @@ const messagesController = {
 			if (result)
 				response.json({ success: true, messages: result })
 		})
+	},
+
+			   
+	getMessage: async (request, response) => {
+		Message.findById(request.params.message_id.limit(20), (err, res) => {
+			if (err)
+				response.json({success: false, message: err.message});
+			
+			if (res)
+				response.send({ success: true, message: res });
+		});
 	}
 
 };
