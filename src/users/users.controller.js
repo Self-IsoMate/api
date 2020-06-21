@@ -36,13 +36,13 @@ const UserController = {
 			var existingUser = await User.findOne({ username: request.body.username });
 
 			if (existingUser && existingUser.username) {
-				throw "Username already exists";
+				throw new Error("Username already exists");
 			}
 
 			existingUser = await User.findOne({ email: request.body.email });
 
 			if (existingUser && existingUser.email) {
-				throw "Email already exists";
+				throw new Error("Email already exists");
 			}
 
 			var user = new User({
@@ -203,12 +203,12 @@ const UserController = {
 
 			if (!community) {
 				response.status(404);
-				throw "Community not found";
+				throw new Error("Community not found");
 			}
 
 			if (!user) {
 				response.status(404);
-				throw "User not found";
+				throw new Error("User not found");
 			}
 
 			if (user.communities) {
@@ -251,7 +251,7 @@ const UserController = {
 
 			
 			if (!chatroom) {
-				throw "Chatroom not found";
+				throw new Error("Chatroom not found");
 			}
 
 			if (user.chatrooms) {
@@ -612,7 +612,7 @@ const UserController = {
 
 			if (!user) {
 				status = 404;
-				throw "User not found";
+				throw new Error("User not found");
 			}
 
 			var communities = user.communities.map((c) => c.toString());
