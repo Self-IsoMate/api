@@ -93,7 +93,7 @@ const CommunityController = {
 				response.json({success: false, message: err.message});
 			
 			if (res)
-				response.send(res);
+				response.json({ success: true, communities: result });
 		});
 	},
 

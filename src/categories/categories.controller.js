@@ -137,10 +137,10 @@ const categoriesController = {
 	getCategories: async (request, response) => {
 		Category.find((err, result) => {
 			if (err)
-				response.json({success: false, message: err.message});
+				response.json({ success: false, message: err.message });
 			
 			if (result)
-				response.send(result);
+				response.json({ success: true, categories: result });
 		})
 	},
 
@@ -150,7 +150,7 @@ const categoriesController = {
 				response.json({success: false, message: err.message});
 			
 			if (res)
-				response.send(res);
+				response.json({ success: true, category: result });
 		});
 	},
 
@@ -162,7 +162,7 @@ const categoriesController = {
 				response.json({success: false, message: err.message});
 			
 			if (res)
-				response.send(res);
+				response.json({ success: true, categories: res });
 		});
 	},
 

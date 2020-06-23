@@ -64,7 +64,7 @@ const challengesController = {
 				response.json({success: false, message: err.message});
 			
 			if (result)
-				response.send(result);
+				response.json({ success: true, challenges: result });
 		})
     },
    
@@ -74,7 +74,7 @@ const challengesController = {
 				response.json({success: false, message: err.message});
 			
 			if (res)
-				response.send(res);
+				response.json({ success: true, challenge: res });
 		});
 	}
 

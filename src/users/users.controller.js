@@ -543,13 +543,14 @@ const UserController = {
 
 		if (!userEmail) {
 			response.json({ success: false, message: 'User not found' });
-			return (false)
+			return
 		}
 		if (objRequest.token == userEmailToken.token){ 
 			userEmail.setPassword(objRequest.password);				
 			User.findOneAndUpdate({email:objRequest.email}, userEmail, (err, res) => {
 				if (err) {
-					response.send({success: false, message: err });
+					response.send({success: false, message: err.message });
+					return
 				}
 	
 				if (res) {
@@ -567,7 +568,7 @@ const UserController = {
 			});
 		} else {
 			response.json({ success: false, message: 'Invalid token' });
-			return (false)
+			return
 		}	
 	},
 

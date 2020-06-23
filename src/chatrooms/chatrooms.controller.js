@@ -90,11 +90,11 @@ const chatroomsController = {
 
         Chatroom.findOneAndUpdate({ _id: request.params.chatroom_id }, { communities: communities }, (err, res) => {
             if (err) {
-                response.send({ success: false, message: err });
+                response.json({ success: false, message: err });
             }
 
             if (res) {
-                response.json({ success: true, message: `successfully updated chatroom (${request.body.community_id}) added for chatroom (${request.params.chatroom_id})` });
+                response.json({ success: true });
             }
         });
 
@@ -122,7 +122,7 @@ const chatroomsController = {
                 response.json({success: false, message: err.message});
 
             if (result)
-                response.send(result);
+                response.json({ success: true, chatrooms: result });
         })
     },
 
@@ -132,7 +132,7 @@ const chatroomsController = {
                 response.json({success: false, message: err.message});
 
             if (res)
-                response.send(res);
+                response.json({ success: true, chatroom: res });
         });
     },
 
