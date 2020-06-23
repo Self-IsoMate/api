@@ -57,7 +57,7 @@ const messagesController = {
 	searchMessage: async (request, response) => {
 				var parameters = request.query;
 		
-				Message.find(parameters,null, {sort: {dateSent: 1}},(err, result) => {
+				Message.find(parameters,null, {sort: {dateSent: 1}}, {limit: 20},(err, result) => {
 					if (err)
 						response.json({success: false, message: err.message});
 					
@@ -76,7 +76,6 @@ const messagesController = {
 						response.send(res);
 				});
 			}
-
 };
 
 module.exports = messagesController;
