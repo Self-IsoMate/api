@@ -90,10 +90,10 @@ const postsController = {
     
             Post.find(parameters,(err, result) => {
                 if (err)
-                    response.json({success: false, message: err.message});
+                    response.json({ success: false, message: err.message });
                 
                 if (result)
-                    response.send(result);
+                    response.json({ success: true, posts: result });
             })
         },
 
@@ -103,7 +103,7 @@ const postsController = {
                     response.json({success: false, message: err.message});
                 
                 if (res)
-                    response.send(res);
+                    response.send({ success: true, post: res });
             });
         },
 
