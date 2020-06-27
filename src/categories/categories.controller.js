@@ -15,6 +15,7 @@ const categoriesController = {
 			parent = await Category.findById(request.body.parentId, (err) => {
 				if (err) {
 					response.json({ success: false, message: err.message });
+					return;
 				}
 			});
 
@@ -42,6 +43,7 @@ const categoriesController = {
 		category.save((err, res) => {
 			if (err) {
 				response.json({ success: false, message: err});
+				return;
 			} else {
 				// update parent here
 
@@ -77,6 +79,7 @@ const categoriesController = {
 
 		var category = await Category.findById( request.params.category_id, (err) => {
 			response.json({ success: false, message: err.message });
+			return;
 		})
 
 		if (category.children.length > 0) {
@@ -88,6 +91,7 @@ const categoriesController = {
 		if (category.parent) {
 			parent = Category.findById(category.parent, (err) => {
 				response.json({ success: false, message: err.message })
+				return;
 			})
 
 			parent.children = parent.children.filter((c) => c != category._id);
@@ -136,8 +140,10 @@ const categoriesController = {
 
 	getCategories: async (request, response) => {
 		Category.find((err, result) => {
-			if (err)
+			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
+			}
 			
 			if (result)
 				response.json({ success: true, categories: result });
@@ -221,6 +227,7 @@ const categoriesController = {
 		var communityCount = await Community.find({ '_id': { $in: communities } }, (err) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 		});
 
@@ -233,6 +240,7 @@ const categoriesController = {
 		var category = await Category.findById(request.params.category_id, (err) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 		});
 

@@ -52,6 +52,7 @@ const tokensController = {
 
 		} catch (err) {
 			response.json({ success: false, message: err });
+			return;
 		}
 	}
 

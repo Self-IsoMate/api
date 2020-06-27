@@ -58,8 +58,10 @@ const messagesController = {
 		var parameters = request.query;
 
 		Message.find(parameters, null, {sort: {dateSent: 1} }, (err, result) => {
-			if (err)
+			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
+			}
 			
 			if (result)
 				response.json({ success: true, messages: result })

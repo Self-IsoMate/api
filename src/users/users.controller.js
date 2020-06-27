@@ -60,6 +60,7 @@ const UserController = {
 			user.save((err) => {
 				if (err) {
 					response.json({ success: false, message: err.message });
+					return;
 				} else {
 
 					//create token
@@ -73,11 +74,13 @@ const UserController = {
 					}
 					catch (errToken) {
 						response.json({ success: false, message: errToken.message });
+						return;
 					}
 			
 					token.save((errToken) => {
 						if (errToken) {
 							response.json({ success: false, message: errToken.message });
+							return;
 						}
 					});
 
@@ -87,6 +90,7 @@ const UserController = {
 					fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
 						if (err) {
 							response.json({ success: false, message: err.message });
+							return;
 						} else {
 							var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());
 
@@ -113,6 +117,7 @@ const UserController = {
 		catch (err) {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 		}
 	},
@@ -122,6 +127,7 @@ const UserController = {
 		User.deleteOne({ _id: request.params.user_id }, (err, res) => {
 			if (err) {
 				response.send({success: false, message: err.message });
+				return;
 			}
 
 			if (res) {
@@ -165,6 +171,7 @@ const UserController = {
 			User.findByIdAndUpdate(request.params.user_id, request.body, {new: true}, (err, res) => {
 				if (err) {
 					response.send({success: false, message: err.message });
+					return;
 				}
 
 				if (res) {
@@ -180,6 +187,7 @@ const UserController = {
 		User.find(parameters, (error, response) => {
 			if (error) {
 				res.send({success: false, message: err.message });
+				return;
 			}
 			if (response) {
 				res.json({ success: true, users: response });
@@ -292,6 +300,7 @@ const UserController = {
 			User.findByIdAndUpdate(userId, user, (err, res) => {
 				if (err) {
 					response.json({ success: false, message: err.message });
+					return;
 				}
 
 				if (res) {
@@ -320,6 +329,7 @@ const UserController = {
 			User.findByIdAndUpdate(userId, user, (err, res) => {
 				if (err) {
 					response.json({ success: false, message: err.message });
+					return;
 				}
 				if (res) {
 					response.json({ success: true, user: user });
@@ -341,6 +351,7 @@ const UserController = {
 		Community.find({ '_id': { $in: user.communities } }, (err, res) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 
 			if (res) {
@@ -351,8 +362,10 @@ const UserController = {
 
 	getChatroomsFromUser: async (request, response) => {
 		User.findById(request.params.user_id, "chatrooms", (err, res) => {
-			if (err)
+			if (err) {
 				response.send({success: false, message: err.message });
+				return;
+			}
 
 			if (res)
 				response.json({ success: true, chatrooms: res.chatrooms });
@@ -367,7 +380,7 @@ const UserController = {
 		if (!userEmailToken) {
 			response.status(404);
 			response.json({ success: false, message: "Token not found" });
-			return (false)
+			return;
 		}
 
 		var userEmail = await User.findOne({ email: request.params.email });
@@ -375,7 +388,7 @@ const UserController = {
 		if (!userEmail) {
 			response.status(404);
 			response.json({ success: false, message: "User not found" });
-			return (false)
+			return;
 		}
 
 		if (userEmail.isVerified == false){
@@ -384,12 +397,14 @@ const UserController = {
 				User.findOneAndUpdate({email:request.params.email}, {isVerified:true}, (err, res) => {
 					if (err) {
 						response.send({success: false, message: err.message });
+						return;
 					}
 
 					if (res) {
 						Token.deleteMany({ email:request.params.email }, (err, res) => {
 							if (err) {
 								response.send({ success: false, message: err.message });
+								return;
 							}
 
 							if (res) {
@@ -399,7 +414,7 @@ const UserController = {
 						});
 					}
 				});
-			} else{
+			} else {
 				response.status(500);
 				response.json({ success: false, message: "Invalid token" });
 				return;
@@ -407,6 +422,7 @@ const UserController = {
 		} else {
 			response.status(400);
 			response.json({ success: false, message: "Email already verified" });
+			return;
 		}
 	},
 
@@ -417,7 +433,7 @@ const UserController = {
 		if (!userEmail) {
 			response.status(404);
 			response.json({ success: false, message: "User not found" });
-			return (false)
+			return;
 		}
 
 		//create token
@@ -428,13 +444,14 @@ const UserController = {
 		}
 		catch (errToken) {
 			response.json({ success: false, message: errToken.message });
+			return;
 		}
 
 		fs.readFile("./src/email/email.html", {encoding: 'utf-8'}, function (err, html) {
 			if (err) {
 				response.json({success: false, message: err.message});
-			}
-			else {
+				return;
+			} else {
 				var customHTML = html.replace(/TOKENREPLACEMENT/g, request.body.email+"/"+userToken.toString());//tokenreplacement will be exchanged with real token and email
 
 				let body = {
@@ -447,6 +464,7 @@ const UserController = {
 				transporter.sendMail(body, (errormail, resultmail)=>{
 					if (errormail) {
 						response.json({success: false, message: errormail.message});
+						return;
 					}
 				});
 
@@ -460,7 +478,7 @@ const UserController = {
 		var userEmail = await User.findOne({ email: request.body.email });
 		if (!userEmail) {
 			response.json({ success: false, message: `user does not exist for email (${request.body.email})` });
-			return (false)
+			return;
 		}
 
 		var userToken = Math.floor(1000 + Math.random() * 9000);
@@ -477,11 +495,13 @@ const UserController = {
 	
 			} catch (errToken) {
 				response.json({success: false, message: errToken.message});
+				return;
 			}
 	
 			token.save((errToken) => {
 				if (errToken) {
 					response.json({success: false, message: errToken.message});
+					return;
 				}
 			});
 
@@ -490,7 +510,8 @@ const UserController = {
 			try {
 				const doc = await Token.findOneAndUpdate( { email: request.body.email}, { token: userToken.toString() }, { new: true });
 			} catch (errToken) {
-				response.json({success: false, message: errToken.message});
+				response.json({ success: false, message: errToken.message });
+				return;
 			}
 
 		}
@@ -532,7 +553,7 @@ const UserController = {
 
 		if (!userEmailToken) {
 			response.json({ success: false, message: 'Token not found' });
-			return (false)
+			return;
 		}
 
 		var userEmail = await User.findOne({ email: objRequest.email })
@@ -544,7 +565,7 @@ const UserController = {
 
 		if (!userEmail) {
 			response.json({ success: false, message: 'User not found' });
-			return
+			return;
 		}
 		if (objRequest.token == userEmailToken.token){ 
 			userEmail.setPassword(objRequest.password);				
@@ -635,6 +656,7 @@ const UserController = {
 			status = status || 500;
 			response.status(status);
 			response.json({ success: false, message: err.message });
+			return;
 		}
 	}
 };

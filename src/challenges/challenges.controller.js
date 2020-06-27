@@ -33,6 +33,7 @@ const challengesController = {
 		Challenge.findByIdAndDelete( request.params.challenge_id , (err, res) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 
 			if (res) {

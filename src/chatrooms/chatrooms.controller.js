@@ -91,6 +91,7 @@ const chatroomsController = {
         Chatroom.findOneAndUpdate({ _id: request.params.chatroom_id }, { communities: communities }, (err, res) => {
             if (err) {
                 response.json({ success: false, message: err });
+                return;
             }
 
             if (res) {
@@ -155,6 +156,7 @@ const chatroomsController = {
             response.json({ success: true });
         } catch (err) {
             response.json({ success: false, message: err.message });
+            return;
         }
     }
 }

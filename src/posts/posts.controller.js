@@ -53,6 +53,7 @@ const postsController = {
             .catch((err) => {
                 if (err) {
                     response.json({ success: false, message: err.message });
+                    return;
                 }
             });
         },
@@ -89,8 +90,10 @@ const postsController = {
             var parameters = request.query;
     
             Post.find(parameters,(err, result) => {
-                if (err)
+                if (err) {
                     response.json({ success: false, message: err.message });
+                    return;
+                }
                 
                 if (result)
                     response.json({ success: true, posts: result });
@@ -124,8 +127,10 @@ const postsController = {
 
             deleteFile()
                 .catch((err) => {
-                    if (err)
+                    if (err) {
                         response.json({ success: false, message: err.message })
+                        return;
+                    }
                 });          
         }
     };
