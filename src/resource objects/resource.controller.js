@@ -25,12 +25,14 @@ const resourcesController = {
 			category = await Category.findById(request.body.categoryId, (err) => {
 				if (err) {
 					response.json({ success: false, message: err.message });
+					return;
 				}
 			});
 
 			if (!category) {
 				response.status(404);
 				response.json({ success: false, message: "No category found" });
+				return;
 			}
 		}
 
@@ -45,6 +47,7 @@ const resourcesController = {
 		resource.save((err, res) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 
 			if (res) {
@@ -54,11 +57,13 @@ const resourcesController = {
 					Category.findByIdAndUpdate(category._id, category, (catErr, catRes) => {
 						if (catErr) {
 							response.json({ success: false, message: catErr });
+							return;
 						}
 
 
 						if (catRes) {
 							response.json({ success: true, resource: res });
+							return;
 						}
 					})
 				} else {
@@ -91,6 +96,7 @@ const resourcesController = {
 		Resource.find(request.query, (err, res) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 
 			if (res) {
@@ -108,6 +114,7 @@ const resourcesController = {
 		var resource = await Resource.findById(request.params.resource_id, (err) => {
 			if (err) {
 				response.json({ success: false, message: err});
+				return;
 			}
 		});
 
@@ -122,6 +129,7 @@ const resourcesController = {
 		Resource.findByIdAndUpdate(resource._id, resource, (err, res) => {
 			if (err) {
 				response.json({ success: false, message: err.message });
+				return;
 			}
 
 			if (res) {

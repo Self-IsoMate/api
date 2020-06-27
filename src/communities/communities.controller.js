@@ -23,7 +23,10 @@ const CommunityController = {
 			});
 			
 			community.save((err, result) => {
-				if (err) response.json({ success: false, message: err.message });
+				if (err) {
+					response.json({ success: false, message: err.message });
+					return;
+				}
 
 				if (result) response.json({ success: true, community: result });
 			})
@@ -42,6 +45,7 @@ const CommunityController = {
 			Community.deleteOne({ _id: request.params.community_id }, (err, res) => {
 				if (err) {
 					response.json({ success: false, message: err.message });
+					return;
 				}
 
 				if (res) {
@@ -52,6 +56,7 @@ const CommunityController = {
 
 		} catch (err) {
 			response.json({ success: false, message: err.message });
+			return;
 		}
 	},
 
@@ -101,7 +106,10 @@ const CommunityController = {
 		var parameter = request.params.category_name;
 
 		Category.findOne({ name: category_name }, 'communities', (err, res) => {
-			if (err) response.json({ success: false, message: err.message });
+			if (err) {
+				response.json({ success: false, message: err.message });
+				return;
+			}
 
 			if (res) response.json({ success: true, communities: res });
 		});
