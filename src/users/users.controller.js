@@ -100,6 +100,7 @@ const UserController = {
 							transporter.sendMail(body, (errormail, resultmail) => {
 								if (errormail) {
 									response.json({ success: false, message: errormail.message });
+									return;
 								}  
 							})
 
