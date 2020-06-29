@@ -13,18 +13,20 @@ const messagesController = {
 				dateSent: new Date()
 			});
 
+			message.save((err) => {
+				if (err) {
+					response.json({success: false, message: err.message});
+					return;
+				} else {
+					response.json({ success: true, message: message });
+					return;
+				}
+			});
 		}
 		catch (err) {
 			response.json({success: false, message: err.message});
+			return;
 		}
-
-		message.save((err) => {
-			if (err) {
-				response.json({success: false, message: err.message});
-			} else {
-				response.json({ success: true, message: message });
-			}
-		});
 	},
 
 	deleteMessage: async (request, response) => {
@@ -32,6 +34,7 @@ const messagesController = {
 		Message.findByIdAndDelete( request.params.message_id , (err, res) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 
 			if (res) {
@@ -45,6 +48,7 @@ const messagesController = {
 		Message.findByIdAndUpdate(request.params.message_id, request.body, (err, res) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 
 			if (res) {
@@ -71,8 +75,10 @@ const messagesController = {
 			   
 	getMessage: async (request, response) => {
 		Message.findById(request.params.message_id, (err, res) => {
-			if (err)
+			if (err) {
 				response.json({success: false, message: err.message});
+				return;
+			}
 			
 			if (res)
 				response.send({ success: true, message: res });

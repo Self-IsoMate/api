@@ -23,11 +23,13 @@ const chatroomsController = {
             var existingChatrooms = await Chatroom.find({ chatroomName: request.body.chatroomName }, (err) => {
                 if (err) {
                     response.json({success: false, message: err.message});
+                    return;
                 }
             })
             var existingCommunities = await Community.find({ '_id': { $in: request.body.communities } }, (err) => {
                 if (err) {
                     response.json({success: false, message: err.message});
+                    return;
                 }
             })
             if (existingChatrooms.length == 0 && (existingCommunities.length == request.body.communities.length)) {
@@ -45,27 +47,29 @@ const chatroomsController = {
                 } else {
                     errorMessage = "Communities List Invalid"
                 }
-                response.json({ success: false, error: errorMessage });
+                response.json({ success: false, message: errorMessage });
                 return;
             }
-        }
-        catch (err) {
-            response.json({success: false, message: err.message});
-        }
 
-        chatrooms.save((err) => {
-            if (err) {
-                response.json({success: false, message: err.message});
-            } else {
-                response.json({ success: true, chatrooms: chatrooms });
-            }
-        });
+            chatrooms.save((err) => {
+                if (err) {
+                    response.json({success: false, message: err.message});
+                } else {
+                    response.json({ success: true, chatrooms: chatrooms });
+                }
+            });
+
+        } catch (err) {
+            response.json({success: false, message: err.message});
+            return;
+        }
     },
 
     updateChatroom: async (request, response) => {
         Chatroom.findByIdAndUpdate(request.params.chatroom_id, request.body, (err, res) => {
             if (err) {
                 response.json({success: false, message: err.message});
+                return;
             }
 
             if (res) {
@@ -106,6 +110,7 @@ const chatroomsController = {
         Chatroom.findByIdAndDelete(request.params.chatroom_id, (err, res) => {
             if (err) {
                 response.json({success: false, message: err.message});
+                return;
             }
 
             if (res) {
@@ -119,8 +124,10 @@ const chatroomsController = {
         var parameters = request.query;
 
         Chatroom.find(parameters, (err, result) => {
-            if (err)
+            if (err) {
                 response.json({success: false, message: err.message});
+                return;
+            }
 
             if (result)
                 response.json({ success: true, chatrooms: result });
@@ -129,8 +136,10 @@ const chatroomsController = {
 
     getChatroom: async (request, response) => {
         Chatroom.findById(request.params.chatroom_id, (err, res) => {
-            if (err)
+            if (err) {
                 response.json({success: false, message: err.message});
+                return;
+            }
 
             if (res)
                 response.json({ success: true, chatroom: res });
@@ -151,6 +160,7 @@ const chatroomsController = {
             transporter.sendMail(body, (errormail, resultmail) => {
                 if (errormail) {
                     response.json({success: false, message: errormail.message});
+                    return;
                 }
             });
             response.json({ success: true });

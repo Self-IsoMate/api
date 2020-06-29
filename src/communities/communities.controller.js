@@ -71,6 +71,7 @@ const CommunityController = {
 		Community.findByIdAndUpdate(request.params.community_id, request.body, (err, res) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 
 			if (res) {
@@ -82,8 +83,10 @@ const CommunityController = {
 
 	getCommunity: async (request, response) => {
 		Community.findById(request.params.community_id, (err, res) => {
-			if (err)
+			if (err) {
 				response.json({success: false, message: err.message});
+				return;
+			}
 			
 			if (res)
 				response.json({ success: true, community: res });
@@ -94,11 +97,13 @@ const CommunityController = {
 		var parameters = request.query;
 
 		Community.find(parameters, (err, res) => {
-			if (err)
+			if (err) {
 				response.json({success: false, message: err.message});
+				return;
+			}
 			
 			if (res)
-				response.json({ success: true, communities: result });
+				response.json({ success: true, communities: res });
 		});
 	},
 
