@@ -117,25 +117,25 @@ const postsController = {
         delMediaPost: async (request, response) => {
             const bucketName = request.body.bucketName; // self-isomate-images
             const filename = request.body.filename // post-images/IMG_20200602_140814.jpg
-
-            // Imports the Google Cloud client library
-
-            // Creates a client
             const storage = new Storage();
 
-            async function deleteFile() {
-                // Deletes the file from the bucket
-                await storage.bucket(bucketName).file(filename).delete();
-                response.json({ success: true });
-            }
-
-            deleteFile()
-                .catch((err) => {
-                    if (err) {
-                        response.json({ success: false, message: err.message })
+            // Changed below to use the promise returned from delete()
+            storage
+                .bucket(bucketName)
+                .file(filename)
+                .delete()
+                .then((res) => {
+                    if (res) {
+                        response.json({ success: true });
                         return;
                     }
-                });          
+                })
+                .catch((err) => {
+                    if (err) {
+                        response.json({ success: false, message: err.message });
+                        return;
+                    }
+                });
         }
     };
 
