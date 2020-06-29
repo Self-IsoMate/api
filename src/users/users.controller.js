@@ -186,7 +186,7 @@ const UserController = {
 		var parameters = req.query;
 		User.find(parameters, (error, response) => {
 			if (error) {
-				res.send({success: false, message: err.message });
+				res.send({success: false, message: error.message });
 				return;
 			}
 			if (response) {

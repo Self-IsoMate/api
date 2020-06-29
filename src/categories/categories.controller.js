@@ -100,6 +100,7 @@ const categoriesController = {
 		Category.findByIdAndDelete( request.params.category_id , (err, res) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 
 			if (res) {
@@ -129,6 +130,7 @@ const categoriesController = {
 		Category.findByIdAndUpdate(request.params.category_id, request.body, (err, res) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 
 			if (res) {
@@ -152,8 +154,10 @@ const categoriesController = {
 
 	getCategory: async (request, response) => {
 		Category.findById(request.params.category_id, (err, res) => {
-			if (err)
+			if (err) {
 				response.json({success: false, message: err.message});
+				return;
+			}
 			
 			if (res)
 				response.json({ success: true, category: result });
@@ -164,8 +168,10 @@ const categoriesController = {
 		var parameters = request.query;
 
 		Category.find(parameters, (err, res) => {
-			if (err)
+			if (err) {
 				response.json({success: false, message: err.message});
+				return;
+			}
 			
 			if (res)
 				response.json({ success: true, categories: res });
@@ -183,12 +189,14 @@ const categoriesController = {
 		var child = await Category.findById(request.body.child, (err) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 		})
 
 		var parent = await Category.findById(request.body.parent, (err) => {
 			if (err) {
 				response.json({success: false, message: err.message});
+				return;
 			}
 		})
 
@@ -206,11 +214,13 @@ const categoriesController = {
 
 				if (childRes && parentRes) {
 					response.json({ success: true, parent: parent, child: child });
+					return;
 				}
 			})
 			.catch((err) => {
 				if (err) {
 					response.json({success: false, message: err.message});
+					return;
 				}
 			})
 

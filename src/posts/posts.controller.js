@@ -63,6 +63,7 @@ const postsController = {
             Post.findByIdAndDelete( request.params.post_id , (err, res) => {
                 if (err) {
                     response.json({success: false, message: err.message});
+                    return;
                 }
 
                 if (res) {
@@ -78,6 +79,7 @@ const postsController = {
             Post.findByIdAndUpdate(request.params.post_id, request.body, {new: true}, (err, res) => {
                 if (err) {
                     response.json({success: false, message: err.message});
+                    return;
                 }
     
                 if (res) {
@@ -102,8 +104,10 @@ const postsController = {
 
         getPost: async (request, response) => {
             Post.findById(request.params.post_id, (err, res) => {
-                if (err)
+                if (err) {
                     response.json({success: false, message: err.message});
+                    return;
+                }
                 
                 if (res)
                     response.send({ success: true, post: res });

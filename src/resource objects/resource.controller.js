@@ -82,7 +82,8 @@ const resourcesController = {
 
         Resource.findByIdAndUpdate(request.params.resource_id, request.body, {new: true}, (err, res) => {
             if (err) {
-                response.json({success: false, message: err.message});
+				response.json({success: false, message: err.message});
+				return;
             }
 
             if (res) {
