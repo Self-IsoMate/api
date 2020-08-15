@@ -54,8 +54,8 @@ const UserController = {
 			});
 
 			user.getDefaultPicture();
-
 			user.setPassword(request.body.password);
+			user.isAdmin(request.body.email);
 			
 			user.save((err) => {
 				if (err) {

@@ -11,6 +11,7 @@ const crypto = require('crypto');
  *        required:
  *          - username
  *          - email
+ *          - admin
  *          - isVerified
  *          - dateCreated
  *          - hash
@@ -23,6 +24,9 @@ const crypto = require('crypto');
  *            type: string
  *            format: email
  *            description: Email for the user, needs to be unique.
+ *          admin:
+ *            type: boolean
+ *            description: Flag to show whether a user is an admin or not.
  *          isVerified:
  *            type: boolean
  *            description: Flag to show whether a user has verified their email or not.
@@ -71,6 +75,10 @@ var User = new mongoose.Schema({
     type: String,
     required: [true, 'Email is required']
   },
+  admin: {
+    type: [Boolean],
+    required: [true, 'isVerified is required'] //made default "no"
+  },
   isVerified: {
     type: Boolean,
     required: [true, 'isVerified is required'] //made default "no"
@@ -116,6 +124,11 @@ User.methods.getDefaultPicture = function() {
 User.methods.validPassword = function(password) { 
 	var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`); 
 	return this.hash === hash; 
+};
+
+User.methods.isAdmin = function(email){
+  var admin = /@self-isomate.online/.test(email);
+  this.admin == admin;
 };
 
 module.exports = User;
