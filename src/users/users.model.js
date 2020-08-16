@@ -76,7 +76,7 @@ var User = new mongoose.Schema({
     required: [true, 'Email is required']
   },
   admin: {
-    type: [Boolean],
+    type: Boolean,
     required: [true, 'isVerified is required'] //made default "no"
   },
   isVerified: {
